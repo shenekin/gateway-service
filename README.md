@@ -28,6 +28,8 @@ API Gateway service for Cloud Resource Management System Platform. This service 
 - **Distributed Tracing**: OpenTelemetry integration with Jaeger
 - **Logging**: Structured JSON logging
 - **Health Checks**: Health and readiness endpoints
+- **Environment Switching**: Support for multiple environment configurations (.env, .env.dev, .env.prod) - *Added: 2024-12-19*
+- **Cluster Mode**: Single instance and cluster deployment modes with full cluster configuration - *Added: 2024-12-19*
 
 ## Architecture
 
@@ -170,6 +172,135 @@ services:
         healthy: true
 ```
 
+### Environment Switching
+
+*Feature added: 2024-12-19*
+
+The gateway service supports loading configuration from multiple environment files:
+
+- `.env` - Default environment
+- `.env.dev` - Development environment
+- `.env.prod` - Production environment
+
+#### Loading Environment Configuration
+
+```python
+from app.settings import get_settings, reload_settings, get_available_environments
+
+# Load default environment
+settings = get_settings()
+
+# Load specific environment
+settings = get_settings(env_name="dev")  # Loads .env.dev
+settings = get_settings(env_name="prod")  # Loads .env.prod
+
+# Load from custom path
+settings = get_settings(env_file_path="/path/to/.env.custom")
+
+# Reload settings (clears cache)
+settings = reload_settings(env_name="dev")
+
+# Get available environments
+environments = get_available_environments()
+```
+
+#### Environment File Selection
+
+The environment is selected based on:
+1. `env_name` parameter in `get_settings()`
+2. `ENVIRONMENT` environment variable
+3. Falls back to `.env` if specified file doesn't exist
+
+### Deployment Modes
+
+*Feature added: 2024-12-19*
+
+The gateway service supports two deployment modes:
+
+#### Single Instance Mode (Default)
+
+```bash
+DEPLOYMENT_MODE=single
+# or
+CLUSTER_ENABLED=false
+```
+
+Single instance configuration:
+- `SINGLE_INSTANCE_ID`: Unique instance identifier
+- `SINGLE_INSTANCE_PORT`: Port for single instance
+- `SINGLE_INSTANCE_HOST`: Host binding
+
+#### Cluster Mode
+
+```bash
+DEPLOYMENT_MODE=cluster
+# or
+CLUSTER_ENABLED=true
+```
+
+Cluster configuration includes:
+
+**Cluster Basics:**
+- `CLUSTER_NAME`: Cluster name
+- `CLUSTER_NODE_ID`: Current node identifier
+- `CLUSTER_NODE_COUNT`: Total number of nodes
+- `CLUSTER_COORDINATOR_HOST`: Coordinator host
+- `CLUSTER_COORDINATOR_PORT`: Coordinator port
+
+**Cluster Operations:**
+- `CLUSTER_HEARTBEAT_INTERVAL`: Heartbeat interval in seconds
+- `CLUSTER_ELECTION_TIMEOUT`: Leader election timeout
+- `CLUSTER_REPLICATION_FACTOR`: Data replication factor
+- `CLUSTER_CONSENSUS_ALGORITHM`: Consensus algorithm (raft, paxos)
+- `CLUSTER_SHARED_STORAGE_PATH`: Shared storage path
+- `CLUSTER_ENABLE_LEADER_ELECTION`: Enable leader election
+
+**Redis Cluster:**
+- `REDIS_CLUSTER_ENABLED`: Enable Redis cluster mode
+- `REDIS_CLUSTER_NODES`: Comma-separated list of Redis nodes
+- `REDIS_CLUSTER_PASSWORD`: Redis cluster password
+- `REDIS_CLUSTER_SOCKET_TIMEOUT`: Socket timeout
+- `REDIS_CLUSTER_MAX_CONNECTIONS`: Maximum connections
+
+**MySQL Cluster:**
+- `MYSQL_CLUSTER_ENABLED`: Enable MySQL cluster mode
+- `MYSQL_CLUSTER_NODES`: Comma-separated list of MySQL nodes
+- `MYSQL_CLUSTER_READ_REPLICAS`: Read replica addresses
+- `MYSQL_CLUSTER_WRITE_NODE`: Write node address
+- `MYSQL_CLUSTER_LOAD_BALANCE_STRATEGY`: Load balance strategy
+- `MYSQL_CLUSTER_CONNECTION_TIMEOUT`: Connection timeout
+- `MYSQL_CLUSTER_MAX_RETRIES`: Maximum retry attempts
+
+#### Checking Deployment Mode
+
+```python
+from app.settings import get_settings
+
+settings = get_settings()
+
+if settings.is_cluster_mode:
+    print(f"Running in cluster mode: {settings.cluster_name}")
+    print(f"Node ID: {settings.cluster_node_id}")
+else:
+    print(f"Running in single instance mode: {settings.single_instance_id}")
+```
+
+#### Cluster Node Lists
+
+```python
+# Get Redis cluster nodes
+redis_nodes = settings.redis_cluster_nodes_list
+# Returns: ['node1:6379', 'node2:6379', 'node3:6379']
+
+# Get MySQL cluster nodes
+mysql_nodes = settings.mysql_cluster_nodes_list
+# Returns: ['db1:3306', 'db2:3306', 'db3:3306']
+
+# Get MySQL read replicas
+read_replicas = settings.mysql_read_replicas_list
+# Returns: ['replica1:3306', 'replica2:3306']
+```
+
 ## Modules
 
 ### Core Modules
@@ -288,6 +419,26 @@ services:
   - `load_private_key()`: Load private key
   - `load_public_key()`: Load public key
 
+#### Environment Loader (`app/utils/env_loader.py`)
+- **Purpose**: Load environment configuration from external .env files - *Added: 2024-12-19*
+- **Dependencies**: `python-dotenv`
+- **Key Functions**:
+  - `get_env_file_path()`: Get path to environment file
+  - `load_environment()`: Load environment variables from file
+  - `get_available_environments()`: List available environment files
+  - `create_example_env_file()`: Create example .env file - *Added: 2024-12-19*
+  - `load_environment_with_auto_create()`: Load with automatic file creation - *Added: 2024-12-19*
+- **Supported Environments**: default, dev, development, prod, production
+
+#### Database Initializer (`app/utils/db_init.py`)
+- **Purpose**: Database initialization and schema creation - *Added: 2024-12-19*
+- **Dependencies**: `asyncmy`
+- **Key Functions**:
+  - `create_database()`: Create database if it doesn't exist
+  - `execute_sql_file()`: Execute SQL file to create tables
+  - `initialize()`: Initialize database and tables
+  - `check_connection()`: Check database connection
+
 ### Adapter Modules
 
 #### Huawei Cloud Adapter (`app/adapters/huaweicloud.py`)
@@ -343,6 +494,9 @@ Test files:
 - `tests/test_rbac.py`: RBAC tests
 - `tests/test_settings.py`: Settings tests
 - `tests/test_models.py`: Model tests
+- `tests/test_env_loader.py`: Environment loader tests - *Added: 2024-12-19*
+- `tests/test_settings_env_switching.py`: Environment switching tests - *Added: 2024-12-19*
+- `tests/test_settings_cluster.py`: Cluster configuration tests - *Added: 2024-12-19*
 
 ## Deployment
 
@@ -446,6 +600,167 @@ This project follows the coding standards defined in `Developer_coding_rules_Pri
 - **L3**: Structure (SRP, function length limits)
 - **L4**: Exceptions, logging, security
 - **L5**: Architecture principles (SOLID)
+
+## Database Initialization
+
+*Feature added: 2024-12-19*
+
+The gateway service includes database initialization scripts for automatic and manual database setup.
+
+### Automatic Database Initialization
+
+The database can be initialized automatically using the Python script:
+
+```bash
+# Initialize database for default environment
+python scripts/database/init_database.py
+
+# Initialize database for specific environment
+python scripts/database/init_database.py --env dev
+python scripts/database/init_database.py --env prod
+
+# Initialize with custom SQL file
+python scripts/database/init_database.py --sql-file /path/to/custom.sql
+
+# Check database connection only
+python scripts/database/init_database.py --check-only
+```
+
+### Manual Database Initialization
+
+You can also initialize the database manually using the SQL script:
+
+```bash
+# Using MySQL command line
+mysql -u root -p < scripts/database/init_database.sql
+
+# Or specify database
+mysql -u root -p gateway_db < scripts/database/init_database.sql
+```
+
+### Database Schema
+
+The initialization script creates the following tables:
+
+- **api_keys**: Stores API keys for authentication
+- **routes**: Stores route configurations
+- **service_instances**: Stores service instance information
+- **rate_limit_records**: Stores rate limiting records
+- **circuit_breaker_states**: Stores circuit breaker states
+- **audit_logs**: Stores audit logs for gateway operations
+
+### Using Database Initializer in Code
+
+```python
+from app.utils.db_init import DatabaseInitializer
+import asyncio
+
+# Initialize database
+result = asyncio.run(DatabaseInitializer.initialize(env_name="dev"))
+
+# Check connection
+is_connected = asyncio.run(DatabaseInitializer.check_connection(env_name="dev"))
+```
+
+## Automatic Environment File Creation
+
+*Feature added: 2024-12-19*
+
+The gateway service can automatically create example `.env` files when they don't exist.
+
+### Creating Example Environment Files
+
+```bash
+# Create all example .env files
+python scripts/create_env_examples.py
+
+# Create in specific directory
+python scripts/create_env_examples.py /path/to/directory
+```
+
+### Auto-Creation on Load
+
+When loading an environment file that doesn't exist, the system can automatically create an example file:
+
+```python
+from app.utils.env_loader import EnvironmentLoader
+
+# Load environment with auto-creation
+EnvironmentLoader.load_environment_with_auto_create(
+    env_name="dev",
+    deployment_mode="single"  # or "cluster"
+)
+```
+
+### Environment File Structure
+
+Each `.env` file includes:
+- Basic server configuration
+- Single instance configuration
+- Cluster configuration (when cluster mode enabled)
+- MySQL single and cluster configurations
+- Redis single and cluster configurations
+- Nacos single and cluster configurations
+- All other gateway service settings
+
+## Changelog
+
+### 2024-12-19 - Database Initialization and Auto Environment Creation
+
+**New Features:**
+- Added automatic database initialization scripts (SQL and Python)
+- Added database schema creation for all gateway tables
+- Added automatic .env file creation when files don't exist
+- Added example .env file generation script
+- Added support for single and cluster configurations in example files
+- Added database connection checking utility
+- Added manual and automatic database initialization options
+
+**Database Tables Created:**
+- `api_keys`: API key storage and management
+- `routes`: Route configuration storage
+- `service_instances`: Service instance tracking
+- `rate_limit_records`: Rate limiting records
+- `circuit_breaker_states`: Circuit breaker state tracking
+- `audit_logs`: Gateway operation audit logs
+
+**New Features:**
+- Added support for loading configuration from external `.env` files
+- Added environment switching between `.env`, `.env.dev`, and `.env.prod`
+- Added single instance deployment mode configuration
+- Added cluster deployment mode with full cluster configuration
+- Added Redis cluster configuration support
+- Added MySQL cluster configuration support
+- Added cluster coordinator and consensus algorithm configuration
+- Added utility functions for environment discovery and reloading
+
+**New Modules:**
+- `app/utils/env_loader.py`: Environment file loader utility
+- `app/utils/db_init.py`: Database initialization utility - *Added: 2024-12-19*
+- Enhanced `app/settings.py` with cluster configuration fields
+
+**New Scripts:**
+- `scripts/create_env_examples.py`: Script to create example .env files - *Added: 2024-12-19*
+- `scripts/database/init_database.py`: Python database initialization script - *Added: 2024-12-19*
+- `scripts/database/init_database.sql`: SQL database initialization script - *Added: 2024-12-19*
+
+**New Tests:**
+- `tests/test_env_loader.py`: Environment loader unit tests
+- `tests/test_settings_env_switching.py`: Environment switching tests
+- `tests/test_settings_cluster.py`: Cluster configuration tests
+- `tests/test_env_auto_create.py`: Environment auto-creation tests - *Added: 2024-12-19*
+- `tests/test_database_init.py`: Database initialization tests - *Added: 2024-12-19*
+
+**Modified Files:**
+- `app/settings.py`: Added cluster configuration fields (lines 104-158)
+- `app/settings.py`: Enhanced `get_settings()` with environment switching (lines 196-225)
+- `app/utils/env_loader.py`: Added auto-creation methods (lines 108-175) - *Added: 2024-12-19*
+- `app/utils/__init__.py`: Added EnvironmentLoader and DatabaseInitializer exports
+
+**Backward Compatibility:**
+- All existing functionality remains unchanged
+- Default behavior unchanged (single instance mode)
+- Existing environment variable loading still works
 
 ## License
 

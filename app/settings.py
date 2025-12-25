@@ -6,6 +6,7 @@ import os
 from typing import List, Optional
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from app.utils.env_loader import EnvironmentLoader
 
 
 class Settings(BaseSettings):
@@ -102,6 +103,50 @@ class Settings(BaseSettings):
     allowed_origins: str = os.getenv("ALLOWED_ORIGINS", "*")
     cors_enabled: bool = os.getenv("CORS_ENABLED", "true").lower() == "true"
     
+    # Deployment Mode Configuration (NEW)
+    # Line 104-110: Added deployment mode configuration for single instance vs cluster
+    deployment_mode: str = os.getenv("DEPLOYMENT_MODE", "single").lower()  # single or cluster
+    cluster_enabled: bool = os.getenv("CLUSTER_ENABLED", "false").lower() == "true"
+    
+    # Single Instance Configuration (NEW)
+    # Line 111-115: Added single instance specific settings
+    single_instance_id: str = os.getenv("SINGLE_INSTANCE_ID", "gateway-1")
+    single_instance_port: int = int(os.getenv("SINGLE_INSTANCE_PORT", "8000"))
+    single_instance_host: str = os.getenv("SINGLE_INSTANCE_HOST", "0.0.0.0")
+    
+    # Cluster Configuration (NEW)
+    # Line 116-130: Added cluster-specific configuration settings
+    cluster_name: str = os.getenv("CLUSTER_NAME", "gateway-cluster")
+    cluster_node_id: str = os.getenv("CLUSTER_NODE_ID", "node-1")
+    cluster_node_count: int = int(os.getenv("CLUSTER_NODE_COUNT", "3"))
+    cluster_coordinator_host: str = os.getenv("CLUSTER_COORDINATOR_HOST", "localhost")
+    cluster_coordinator_port: int = int(os.getenv("CLUSTER_COORDINATOR_PORT", "2379"))
+    cluster_heartbeat_interval: int = int(os.getenv("CLUSTER_HEARTBEAT_INTERVAL", "10"))
+    cluster_election_timeout: int = int(os.getenv("CLUSTER_ELECTION_TIMEOUT", "30"))
+    cluster_replication_factor: int = int(os.getenv("CLUSTER_REPLICATION_FACTOR", "2"))
+    cluster_consensus_algorithm: str = os.getenv("CLUSTER_CONSENSUS_ALGORITHM", "raft")
+    cluster_shared_storage_path: str = os.getenv("CLUSTER_SHARED_STORAGE_PATH", "/app/shared")
+    cluster_enable_leader_election: bool = os.getenv("CLUSTER_ENABLE_LEADER_ELECTION", "true").lower() == "true"
+    
+    # Redis Cluster Configuration (NEW)
+    # Line 131-137: Added Redis cluster configuration for cluster mode
+    redis_cluster_enabled: bool = os.getenv("REDIS_CLUSTER_ENABLED", "false").lower() == "true"
+    redis_cluster_nodes: str = os.getenv("REDIS_CLUSTER_NODES", "localhost:6379,localhost:6380,localhost:6381")
+    redis_cluster_password: Optional[str] = os.getenv("REDIS_CLUSTER_PASSWORD")
+    redis_cluster_socket_timeout: int = int(os.getenv("REDIS_CLUSTER_SOCKET_TIMEOUT", "5"))
+    redis_cluster_socket_connect_timeout: int = int(os.getenv("REDIS_CLUSTER_SOCKET_CONNECT_TIMEOUT", "5"))
+    redis_cluster_max_connections: int = int(os.getenv("REDIS_CLUSTER_MAX_CONNECTIONS", "50"))
+    
+    # MySQL Cluster Configuration (NEW)
+    # Line 138-145: Added MySQL cluster configuration for cluster mode
+    mysql_cluster_enabled: bool = os.getenv("MYSQL_CLUSTER_ENABLED", "false").lower() == "true"
+    mysql_cluster_nodes: str = os.getenv("MYSQL_CLUSTER_NODES", "localhost:3306,localhost:3307,localhost:3308")
+    mysql_cluster_read_replicas: str = os.getenv("MYSQL_CLUSTER_READ_REPLICAS", "localhost:3306")
+    mysql_cluster_write_node: str = os.getenv("MYSQL_CLUSTER_WRITE_NODE", "localhost:3306")
+    mysql_cluster_load_balance_strategy: str = os.getenv("MYSQL_CLUSTER_LOAD_BALANCE_STRATEGY", "round_robin")
+    mysql_cluster_connection_timeout: int = int(os.getenv("MYSQL_CLUSTER_CONNECTION_TIMEOUT", "10"))
+    mysql_cluster_max_retries: int = int(os.getenv("MYSQL_CLUSTER_MAX_RETRIES", "3"))
+    
     @property
     def trusted_proxy_list(self) -> List[str]:
         """Get list of trusted proxy IPs"""
@@ -114,6 +159,58 @@ class Settings(BaseSettings):
             return ["*"]
         return [origin.strip() for origin in self.allowed_origins.split(",")]
     
+    # NEW: Property methods for cluster configuration
+    # Line 149-158: Added property methods to get cluster node list and Redis cluster nodes
+    @property
+    def is_cluster_mode(self) -> bool:
+        """
+        Check if running in cluster mode
+        
+        Returns:
+            True if cluster mode is enabled
+        """
+        return self.deployment_mode == "cluster" or self.cluster_enabled
+    
+    @property
+    def is_single_instance_mode(self) -> bool:
+        """
+        Check if running in single instance mode
+        
+        Returns:
+            True if single instance mode
+        """
+        return not self.is_cluster_mode
+    
+    @property
+    def redis_cluster_nodes_list(self) -> List[str]:
+        """
+        Get list of Redis cluster nodes
+        
+        Returns:
+            List of Redis cluster node addresses
+        """
+        return [node.strip() for node in self.redis_cluster_nodes.split(",")]
+    
+    @property
+    def mysql_cluster_nodes_list(self) -> List[str]:
+        """
+        Get list of MySQL cluster nodes
+        
+        Returns:
+            List of MySQL cluster node addresses
+        """
+        return [node.strip() for node in self.mysql_cluster_nodes.split(",")]
+    
+    @property
+    def mysql_read_replicas_list(self) -> List[str]:
+        """
+        Get list of MySQL read replica addresses
+        
+        Returns:
+            List of read replica addresses
+        """
+        return [replica.strip() for replica in self.mysql_cluster_read_replicas.split(",")]
+    
     class Config:
         """Pydantic configuration"""
         env_file = ".env"
@@ -121,7 +218,72 @@ class Settings(BaseSettings):
 
 
 @lru_cache()
-def get_settings() -> Settings:
-    """Get cached settings instance"""
+def get_settings(env_name: Optional[str] = None, env_file_path: Optional[str] = None) -> Settings:
+    """
+    Get cached settings instance with optional environment file loading
+    
+    Args:
+        env_name: Environment name (default, dev, prod) - NEW parameter
+        env_file_path: Custom path to .env file - NEW parameter
+        
+    Returns:
+        Settings instance
+        
+    Note:
+        Lines 196-203: Added support for loading from external .env files
+        This allows switching between .env, .env.dev, .env.prod without code changes
+    """
+    # NEW: Load environment file before creating Settings instance
+    # Line 204-210: Environment file loading logic
+    if env_file_path:
+        EnvironmentLoader.load_environment(base_path=os.path.dirname(env_file_path))
+        # Override env_file in Config
+        Settings.Config.env_file = os.path.basename(env_file_path)
+    elif env_name:
+        EnvironmentLoader.load_environment(env_name=env_name)
+        # Update env_file based on environment name
+        env_file = EnvironmentLoader.get_env_file_path(env_name)
+        Settings.Config.env_file = env_file
+    
     return Settings()
+
+
+def reload_settings(env_name: Optional[str] = None, env_file_path: Optional[str] = None) -> Settings:
+    """
+    Reload settings with new environment configuration
+    
+    Args:
+        env_name: Environment name (default, dev, prod) - NEW function
+        env_file_path: Custom path to .env file - NEW function
+        
+    Returns:
+        New Settings instance
+        
+    Note:
+        Lines 212-225: New function to reload settings without cache
+        Useful for testing or runtime environment switching
+    """
+    # Clear cache to force reload
+    get_settings.cache_clear()
+    
+    # Load new environment
+    if env_file_path:
+        EnvironmentLoader.load_environment(base_path=os.path.dirname(env_file_path))
+    elif env_name:
+        EnvironmentLoader.load_environment(env_name=env_name)
+    
+    return get_settings(env_name, env_file_path)
+
+
+def get_available_environments() -> List[str]:
+    """
+    Get list of available environment configurations
+    
+    Returns:
+        List of available environment names
+        
+    Note:
+        Lines 227-234: New utility function to discover available .env files
+    """
+    return EnvironmentLoader.get_available_environments()
 
