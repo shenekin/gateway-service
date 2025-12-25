@@ -13,13 +13,13 @@ API Gateway service for Cloud Resource Management System Platform. This service 
 - [API Endpoints](#api-endpoints)
 - [Testing](#testing)
 - [Deployment](#deployment)
+- [External Services Configuration](#external-services-configuration)
 - [Dependencies](#dependencies)
 
 ## Features
 
 - **Request Routing**: Dynamic route matching and forwarding to backend services
 - **Authentication**: JWT and API key authentication support
-- **Authorization**: Role-Based Access Control (RBAC)
 - **Rate Limiting**: Token bucket algorithm with Redis backend
 - **Load Balancing**: Multiple strategies (round-robin, least connections, weighted, random)
 - **Circuit Breaker**: Fault tolerance and cascading failure prevention
@@ -60,7 +60,7 @@ gateway-service/
 │   │   └── retry.py            # Retry handler
 │   ├── middleware/             # Request middleware
 │   │   ├── auth.py             # Authentication middleware
-│   │   ├── rbac.py             # Authorization middleware
+│   │   # rbac.py removed - RBAC not being developed at this stage
 │   │   ├── rate_limit.py       # Rate limiting middleware
 │   │   ├── logging.py          # Logging middleware
 │   │   └── tracing.py          # Distributed tracing middleware
@@ -68,7 +68,7 @@ gateway-service/
 │   │   ├── route.py            # Route configuration models
 │   │   └── context.py          # Request context models
 │   ├── adapters/               # External service adapters
-│   │   └── huaweicloud.py      # Huawei Cloud adapter
+│   │   # huaweicloud.py removed - not being developed at this stage
 │   └── utils/                  # Utility modules
 │       └── crypto.py           # Cryptographic utilities
 ├── config/                      # Configuration files
@@ -80,7 +80,7 @@ gateway-service/
 │   ├── test_circuit_breaker.py
 │   ├── test_retry.py
 │   ├── test_auth.py
-│   ├── test_rbac.py
+│   # test_rbac.py removed - RBAC not being developed at this stage
 │   ├── test_settings.py
 │   └── test_models.py
 ├── requirements.txt            # Python dependencies
@@ -94,9 +94,16 @@ gateway-service/
 ### Prerequisites
 
 - Python 3.10+
-- Redis (for rate limiting)
-- MySQL 8.0 (for API key storage, optional)
-- Nacos/Consul (for service discovery, optional)
+- **Required Services:**
+  - Redis (for rate limiting)
+  - MySQL 8.0 (for API key storage and database operations)
+- **Optional Services:**
+  - Nacos/Consul/etcd (for service discovery, or use static configuration)
+  - Jaeger (for distributed tracing)
+  - Prometheus (for metrics collection)
+- **Backend Services:** Project Service, Auth Service, ECS Service, Dashboard Service (must be running and registered with service discovery)
+
+**See [EXTERNAL_SERVICES_CHECKLIST.md](EXTERNAL_SERVICES_CHECKLIST.md) for complete setup guide.**
 
 ### Setup
 
@@ -116,13 +123,19 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Configure environment variables:
+4. **Prepare external services** (see [External Services Configuration](#external-services-configuration)):
+```bash
+# Verify all external services are ready
+python scripts/verify_external_services.py
+```
+
+5. Configure environment variables:
 ```bash
 cp .env.dev .env
 # Edit .env with your configuration
 ```
 
-5. Run the service:
+6. Run the service:
 ```bash
 # Recommended: Use unified entry point (run.py)
 python run.py
@@ -147,6 +160,95 @@ python -m app.main
 # Or using uvicorn directly:
 uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
 ```
+
+## External Services Configuration
+
+**Date:** 2025-12-25  
+**Purpose:** Complete guide for preparing all external dependencies before starting the gateway service
+
+### Overview
+
+The gateway service requires several external services to function properly. Use the verification script and configuration files to ensure all dependencies are ready.
+
+### Quick Verification
+
+Before starting the gateway, verify all external services:
+
+```bash
+python scripts/verify_external_services.py
+```
+
+This script checks:
+- ✅ Redis connection
+- ✅ MySQL connection
+- ✅ Database schema initialization
+- ✅ Service discovery availability
+- ✅ Backend services health
+- ✅ Jaeger availability (optional)
+- ✅ Log directory writability
+
+### Required Services
+
+#### 1. Redis
+- **Purpose:** Rate limiting storage
+- **Default:** `localhost:6379`
+- **Configuration:** `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
+- **Installation:** `docker run -d --name redis -p 6379:6379 redis:latest`
+- **Verification:** `redis-cli ping`
+
+#### 2. MySQL 8.0
+- **Purpose:** Database for API keys, routes, service instances
+- **Default:** `localhost:3306`
+- **Configuration:** `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`
+- **Installation:** See `EXTERNAL_SERVICES_CHECKLIST.md`
+- **Initialization:** `python scripts/database/init_database.py`
+
+### Optional Services
+
+#### Service Discovery
+Choose one:
+- **Nacos** (default): `SERVICE_DISCOVERY_TYPE=nacos`
+- **Consul**: `SERVICE_DISCOVERY_TYPE=consul`
+- **etcd**: `SERVICE_DISCOVERY_TYPE=etcd`
+- **Static**: `SERVICE_DISCOVERY_TYPE=static` (uses `config/services.yaml`)
+
+#### Jaeger (Distributed Tracing)
+- **Purpose:** Request tracing
+- **Default:** `localhost:6831`
+- **Configuration:** `TRACING_ENABLED`, `JAEGER_AGENT_HOST`, `JAEGER_AGENT_PORT`
+- **UI:** `http://localhost:16686`
+
+#### Prometheus (Monitoring)
+- **Purpose:** Metrics collection
+- **Configuration:** `PROMETHEUS_ENABLED`, `METRICS_PORT`
+- **Endpoint:** `/metrics`
+
+### Configuration Files
+
+- **`config/external_services.yaml`**: Complete configuration reference for all external services
+- **`EXTERNAL_SERVICES_CHECKLIST.md`**: Detailed setup guide with installation instructions
+- **`scripts/verify_external_services.py`**: Verification script to check all services
+
+### Backend Services
+
+The gateway routes requests to backend services. Ensure these services are running and registered with service discovery:
+
+- **Project Service**: `/projects`, `/projects/{project_id}`
+- **Auth Service**: `/auth/login`, `/auth/logout`, `/auth/register`, `/auth/refresh`
+- **ECS Service**: `/ecs`, `/ecs/{ecs_id}`
+- **Dashboard Service**: `/dashboard`
+
+All backend services must implement `/health` endpoint and be registered with service discovery.
+
+### Cluster Mode
+
+For cluster deployment, additional configuration is required:
+
+- **Redis Cluster**: `REDIS_CLUSTER_ENABLED=true`
+- **MySQL Cluster**: `MYSQL_CLUSTER_ENABLED=true`
+- **Nacos Cluster**: `NACOS_CLUSTER_ENABLED=true`
+
+See `config/external_services.yaml` for cluster configuration details.
 
 ## Configuration
 
@@ -382,12 +484,10 @@ read_replicas = settings.mysql_read_replicas_list
   - `authenticate()`: Try both methods
 
 #### RBAC (`app/middleware/rbac.py`)
-- **Purpose**: Role-Based Access Control
-- **Dependencies**: `app/models/context.py`, `app/models/route.py`
-- **Key Functions**:
-  - `check_permission()`: Check user permissions
-  - `check_role()`: Check user roles
-  - `authorize()`: Authorize request
+- **Status**: Removed - Not being developed at this stage
+- **Reason**: RBAC functionality removed as per project requirements
+- **Note**: Basic authorization is handled by route configuration (`auth_required` flag)
+- **Future**: Fine-grained authorization should be handled by backend services
 
 #### Rate Limiting (`app/middleware/rate_limit.py`)
 - **Purpose**: Request rate limiting using Redis
@@ -398,12 +498,18 @@ read_replicas = settings.mysql_read_replicas_list
   - `check_request_rate_limit()`: Check rate limit for request
 
 #### Logging (`app/middleware/logging.py`)
-- **Purpose**: Structured request/response logging
-- **Dependencies**: `app/settings.py`
+- **Purpose**: Structured request/response logging with separate log files - *Enhanced: 2025-12-25*
+- **Dependencies**: `app/settings.py`, `app/utils/log_manager.py`
 - **Format**: JSON or text
+- **Log Files**: Separate files for different log types:
+  - `request.log`: HTTP request/response logs
+  - `error.log`: Error and exception logs
+  - `access.log`: Access control and authentication logs
+  - `audit.log`: Audit trail and security events
+  - `application.log`: General application logs
 - **Key Functions**:
-  - `_log_request()`: Log request information
-  - `_log_response()`: Log response information
+  - `_log_request()`: Log request information to request.log
+  - `_log_response()`: Log response information to appropriate files
 
 #### Tracing (`app/middleware/tracing.py`)
 - **Purpose**: Distributed tracing with OpenTelemetry
@@ -450,6 +556,19 @@ read_replicas = settings.mysql_read_replicas_list
   - `load_environment_with_auto_create()`: Load with automatic file creation - *Added: 2024-12-19*
 - **Supported Environments**: default, dev, development, prod, production
 
+#### Log Manager (`app/utils/log_manager.py`)
+- **Purpose**: Manage separate log files for different log types - *Added: 2025-12-25*
+- **Dependencies**: `logging`, `app/settings.py`
+- **Key Functions**:
+  - `get_logger()`: Get logger for specific log type
+  - `log_request()`: Log to request.log
+  - `log_error()`: Log to error.log
+  - `log_access()`: Log to access.log
+  - `log_audit()`: Log to audit.log
+  - `log_application()`: Log to application.log
+- **Log Types**: request, error, access, audit, application
+- **Features**: Rotating file handlers, separate file per log type
+
 #### Database Initializer (`app/utils/db_init.py`)
 - **Purpose**: Database initialization and schema creation - *Added: 2024-12-19*
 - **Dependencies**: `asyncmy`
@@ -462,13 +581,9 @@ read_replicas = settings.mysql_read_replicas_list
 ### Adapter Modules
 
 #### Huawei Cloud Adapter (`app/adapters/huaweicloud.py`)
-- **Purpose**: Integration with Huawei Cloud APIs
-- **Dependencies**: `httpx`
-- **Key Functions**:
-  - `authenticate()`: Authenticate with Huawei Cloud
-  - `list_ecs_instances()`: List ECS instances
-  - `create_ecs_instance()`: Create ECS instance
-  - `delete_ecs_instance()`: Delete ECS instance
+- **Status**: Removed - Not being developed at this stage
+- **Reason**: Huawei Cloud adapter functionality removed as per project requirements
+- **Note**: Adapter functionality can be re-implemented when needed
 
 ## API Endpoints
 
@@ -511,7 +626,7 @@ Test files:
 - `tests/test_circuit_breaker.py`: Circuit breaker tests
 - `tests/test_retry.py`: Retry handler tests
 - `tests/test_auth.py`: Authentication tests
-- `tests/test_rbac.py`: RBAC tests
+- `tests/test_rbac.py`: Removed - RBAC not being developed at this stage
 - `tests/test_settings.py`: Settings tests
 - `tests/test_models.py`: Model tests
 - `tests/test_env_loader.py`: Environment loader tests - *Added: 2024-12-19*
@@ -590,7 +705,7 @@ main.py
 │   ├── middleware/auth.py
 │   │   ├── settings.py
 │   │   └── utils/crypto.py
-│   ├── middleware/rbac.py
+│   # middleware/rbac.py removed - RBAC not being developed at this stage
 │   │   ├── models/context.py
 │   │   └── models/route.py
 │   ├── middleware/rate_limit.py
@@ -610,7 +725,7 @@ main.py
 │       ├── core/retry.py
 │       │   └── settings.py
 │       └── settings.py
-└── adapters/huaweicloud.py
+└── adapters/  # huaweicloud.py removed - not being developed at this stage
 ```
 
 ## Code Standards
@@ -789,7 +904,225 @@ The default port has been updated to **8001** (previously 8000). This can be con
 - Command line: `python run.py --port 8001`
 - Settings file: Update `.env` file with `PORT=8001`
 
+## Logging Configuration
+
+*Feature enhanced: 2025-12-25*
+
+The gateway service now supports separate log files for different log types, improving log management and analysis.
+
+### Log File Types
+
+The service creates separate log files for different purposes:
+
+- **`request.log`**: HTTP request and response logs
+- **`error.log`**: Error and exception logs
+- **`access.log`**: Access control and authentication logs
+- **`audit.log`**: Audit trail and security events
+- **`application.log`**: General application logs
+
+### Configuration
+
+Environment variables for logging:
+
+```bash
+# Log directory
+LOG_DIRECTORY=/app/logs
+
+# Individual log file paths
+LOG_REQUEST_FILE=/app/logs/request.log
+LOG_ERROR_FILE=/app/logs/error.log
+LOG_ACCESS_FILE=/app/logs/access.log
+LOG_AUDIT_FILE=/app/logs/audit.log
+LOG_APPLICATION_FILE=/app/logs/application.log
+
+# Log rotation
+LOG_MAX_BYTES=10485760  # 10MB
+LOG_BACKUP_COUNT=5
+
+# Log format and level
+LOG_LEVEL=INFO
+LOG_FORMAT=json  # or text
+```
+
+### Using Log Manager
+
+```python
+from app.utils.log_manager import LogManager
+
+log_manager = LogManager()
+
+# Log request
+log_manager.log_request("Request received", {"request_id": "123"})
+
+# Log error
+log_manager.log_error("Error occurred", {"error_code": "500"}, exc_info=True)
+
+# Log access
+log_manager.log_access("User authenticated", {"user_id": "123"})
+
+# Log audit
+log_manager.log_audit("Security event", {"action": "login"})
+
+# Log application
+log_manager.log_application("Application started", "INFO")
+```
+
+### Log File Structure
+
+```
+/app/logs/
+├── request.log          # HTTP requests/responses
+├── request.log.1        # Rotated request logs
+├── error.log            # Errors and exceptions
+├── error.log.1          # Rotated error logs
+├── access.log           # Access control logs
+├── audit.log            # Audit trail logs
+└── application.log      # Application logs
+```
+
 ## Changelog
+
+### 2025-12-25 - External Services Configuration
+
+**Feature Added:**
+- Added comprehensive external services configuration and verification system
+- Created configuration files and documentation for all external dependencies
+
+**Purpose:**
+- Help users prepare all external services before starting the gateway
+- Provide clear checklist of required and optional services
+- Enable automated verification of service availability
+
+**Root Cause Analysis:**
+- Gateway service depends on multiple external services (Redis, MySQL, Service Discovery, etc.)
+- Users need clear guidance on what services to prepare
+- Manual verification of services is error-prone and time-consuming
+- No centralized documentation for all external dependencies
+
+**Solution:**
+- Created `config/external_services.yaml`: Complete configuration reference for all external services
+- Created `EXTERNAL_SERVICES_CHECKLIST.md`: Detailed setup guide with installation instructions
+- Created `scripts/verify_external_services.py`: Automated verification script
+- Added comprehensive unit tests for verification script
+- Updated README.md with external services configuration section
+
+**Files Created:**
+- `config/external_services.yaml`: External services configuration reference
+- `EXTERNAL_SERVICES_CHECKLIST.md`: Complete setup guide with installation instructions
+- `scripts/verify_external_services.py`: Service verification script
+- `tests/test_external_services_verification.py`: Unit tests for verification script
+
+**Files Modified:**
+- `README.md`: Updated Prerequisites section, added External Services Configuration section, updated changelog
+
+**Features:**
+- **Service Verification Script**: Checks Redis, MySQL, database schema, service discovery, Jaeger, backend services, and log directory
+- **Configuration Reference**: Complete YAML file with all service configurations, installation commands, and health checks
+- **Detailed Checklist**: Markdown document with step-by-step setup instructions
+- **Comprehensive Tests**: 20+ test methods covering all verification scenarios
+
+**Verification:**
+- Verification script successfully checks all required services
+- Configuration files provide complete reference for all services
+- Unit tests cover all verification scenarios
+- Documentation is comprehensive and easy to follow
+
+**Usage:**
+```bash
+# Verify all external services before starting gateway
+python scripts/verify_external_services.py
+
+# Check configuration reference
+cat config/external_services.yaml
+
+# Follow setup guide
+cat EXTERNAL_SERVICES_CHECKLIST.md
+```
+
+### 2025-12-25 - Huawei Cloud Adapter Removal and Separate Log Files
+
+**Changes:**
+- Removed Huawei Cloud adapter functionality (not being developed)
+- Implemented separate log files for different log types
+- Enhanced logging middleware with LogManager
+
+**Huawei Cloud Adapter Removal:**
+- Removed `app/adapters/huaweicloud.py` file
+- Updated `app/adapters/__init__.py` to remove HuaweiCloudAdapter export
+
+**Separate Log Files Implementation:**
+- Created `app/utils/log_manager.py` for managing separate log files
+- Enhanced `app/middleware/logging.py` to use LogManager
+- Added logging configuration to `app/settings.py`:
+  - Separate log file paths (request, error, access, audit, application)
+  - Log rotation configuration
+  - Log directory configuration
+
+**Log File Types:**
+- `request.log`: HTTP request/response logs
+- `error.log`: Error and exception logs
+- `access.log`: Access control and authentication logs
+- `audit.log`: Audit trail and security events
+- `application.log`: General application logs
+
+**Files Modified:**
+- `app/adapters/__init__.py`: Removed HuaweiCloudAdapter (line 5)
+- `app/settings.py`: Added separate log file configuration (lines 96-105)
+- `app/middleware/logging.py`: Enhanced to use LogManager (lines 19-110)
+- `app/utils/__init__.py`: Added LogManager export
+
+**New Files:**
+- `app/utils/log_manager.py`: Log manager for separate log files
+- `tests/test_log_manager.py`: Log manager tests
+- `tests/test_logging_middleware_separate_files.py`: Logging middleware tests
+- `tests/test_huaweicloud_removal.py`: Huawei Cloud removal verification tests
+
+**New Tests:**
+- `tests/test_log_manager.py`: 10 test methods for log manager
+- `tests/test_logging_middleware_separate_files.py`: 5 test methods for logging middleware
+- `tests/test_huaweicloud_removal.py`: 4 test methods for Huawei Cloud removal
+
+**Impact:**
+- No breaking changes to existing functionality
+- Logging now uses separate files for better organization
+- Log rotation prevents log files from growing too large
+- All existing logging functionality preserved
+
+### 2025-12-25 - RBAC Functionality Removal
+
+**Change:**
+- Removed RBAC (Role-Based Access Control) functionality from gateway service
+
+**Reason:**
+- RBAC is not being developed at this stage as per project requirements
+- Removed to simplify the codebase and focus on core gateway functionality
+
+**Files Removed:**
+- `app/middleware/rbac.py`: RBAC middleware implementation
+- `tests/test_rbac.py`: RBAC unit tests
+
+**Files Modified:**
+- `app/bootstrap.py`: 
+  - Line 9: Removed RBACMiddleware import
+  - Line 48: Removed RBACMiddleware from middleware stack
+- `app/main.py`:
+  - Line 12: Removed RBACMiddleware import
+  - Line 20: Removed RBACMiddleware initialization
+  - Line 177: Removed RBAC authorization call
+- `app/middleware/__init__.py`:
+  - Line 6: Removed RBACMiddleware import
+  - Removed from __all__ export
+
+**Authorization Approach:**
+- Basic authorization is handled by route configuration (`auth_required` flag)
+- Authentication is still performed via JWT and API keys
+- Fine-grained authorization should be handled by backend services
+
+**Impact:**
+- No breaking changes to existing functionality
+- Authentication still works correctly
+- Route-level authorization via `auth_required` flag still works
+- All other middleware and functionality preserved
 
 ### 2025-12-25 - JWT Import Fix
 
@@ -928,6 +1261,11 @@ The default port has been updated to **8001** (previously 8000). This can be con
 - `scripts/create_env_examples.py`: Script to create example .env files - *Added: 2024-12-19*
 - `scripts/database/init_database.py`: Python database initialization script - *Added: 2024-12-19*
 - `scripts/database/init_database.sql`: SQL database initialization script - *Added: 2024-12-19*
+- `scripts/verify_external_services.py`: External services verification script - *Added: 2025-12-25*
+
+**New Configuration Files:**
+- `config/external_services.yaml`: Complete external services configuration reference - *Added: 2025-12-25*
+- `EXTERNAL_SERVICES_CHECKLIST.md`: Detailed external services setup guide - *Added: 2025-12-25*
 
 **New Tests:**
 - `tests/test_env_loader.py`: Environment loader unit tests
@@ -937,6 +1275,11 @@ The default port has been updated to **8001** (previously 8000). This can be con
 - `tests/test_database_init.py`: Database initialization tests - *Added: 2024-12-19*
 - `tests/test_circular_import_fix.py`: Circular import fix tests - *Added: 2025-12-25*
 - `tests/test_jwt_import_fix.py`: JWT import fix tests - *Added: 2025-12-25*
+- `tests/test_rbac_removal.py`: RBAC removal verification tests - *Added: 2025-12-25*
+- `tests/test_log_manager.py`: Log manager tests - *Added: 2025-12-25*
+- `tests/test_logging_middleware_separate_files.py`: Logging middleware separate files tests - *Added: 2025-12-25*
+- `tests/test_huaweicloud_removal.py`: Huawei Cloud removal verification tests - *Added: 2025-12-25*
+- `tests/test_external_services_verification.py`: External services verification tests - *Added: 2025-12-25*
 
 **Modified Files:**
 - `app/settings.py`: Added cluster configuration fields (lines 104-158)

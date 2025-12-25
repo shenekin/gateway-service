@@ -9,7 +9,9 @@ from fastapi.responses import JSONResponse
 from app.bootstrap import create_app
 from app.models.context import RequestContext, UserContext
 from app.middleware.auth import AuthMiddleware
-from app.middleware.rbac import RBACMiddleware
+# Line 12: Removed RBACMiddleware import
+# Reason: RBAC functionality removed as per requirements - not being developed at this stage
+# RBAC middleware and related tests have been removed from the project
 from app.middleware.rate_limit import RateLimitMiddleware
 
 # Create application
@@ -17,7 +19,8 @@ app = create_app()
 
 # Initialize middleware
 auth_middleware = AuthMiddleware()
-rbac_middleware = RBACMiddleware()
+# Line 20: Removed RBACMiddleware initialization
+# Reason: RBAC functionality removed as per requirements - not being developed at this stage
 rate_limit_middleware = RateLimitMiddleware()
 
 
@@ -174,7 +177,10 @@ async def gateway_handler(request: Request, path: str) -> Response:
         request.state.tenant_id = user_context.tenant_id
     
     # Authorization
-    await rbac_middleware.authorize(user_context, route, request.method)
+    # Line 177: Removed RBAC authorization call
+    # Reason: RBAC functionality removed as per requirements - not being developed at this stage
+    # Basic authorization is handled by checking auth_required flag in route config
+    # Fine-grained authorization should be handled by backend services
     
     # Rate limiting
     is_allowed, remaining = await rate_limit_middleware.check_request_rate_limit(

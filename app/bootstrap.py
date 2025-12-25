@@ -6,7 +6,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.settings import get_settings
 from app.middleware.auth import AuthMiddleware
-from app.middleware.rbac import RBACMiddleware
+# Line 9: Removed RBACMiddleware import
+# Reason: RBAC functionality removed as per requirements - not being developed at this stage
+# RBAC middleware and related tests have been removed from the project
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.logging import LoggingMiddleware
 from app.middleware.tracing import TracingMiddleware
@@ -45,7 +47,8 @@ def create_app() -> FastAPI:
     app.add_middleware(TracingMiddleware)
     app.add_middleware(LoggingMiddleware)
     app.add_middleware(AuthMiddleware)
-    app.add_middleware(RBACMiddleware)
+    # Line 48: Removed RBACMiddleware from middleware stack
+    # Reason: RBAC functionality removed as per requirements - not being developed at this stage
     app.add_middleware(RateLimitMiddleware)
     
     # Initialize services
