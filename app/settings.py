@@ -6,7 +6,14 @@ import os
 from typing import List, Optional
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-from app.utils.env_loader import EnvironmentLoader
+
+# Line 9: Removed top-level import of EnvironmentLoader to fix circular import
+# Reason: Circular import occurs when:
+#   1. run.py imports get_settings from app.settings
+#   2. app.settings imports EnvironmentLoader at module level
+#   3. EnvironmentLoader or its dependencies might import get_settings
+# Solution: Use lazy import inside functions that need EnvironmentLoader
+# This breaks the circular dependency chain
 
 
 class Settings(BaseSettings):
@@ -16,7 +23,9 @@ class Settings(BaseSettings):
     environment: str = os.getenv("ENVIRONMENT", "default")
     debug: bool = os.getenv("DEBUG", "false").lower() == "true"
     host: str = os.getenv("HOST", "0.0.0.0")
-    port: int = int(os.getenv("PORT", "8000"))
+    # Line 19: Changed default port from 8000 to 8001
+    # Reason: Update default port to 8001 as per requirements
+    port: int = int(os.getenv("PORT", "8001"))
     
     # SSL/TLS
     ssl_enabled: bool = os.getenv("SSL_ENABLED", "false").lower() == "true"
@@ -111,7 +120,9 @@ class Settings(BaseSettings):
     # Single Instance Configuration (NEW)
     # Line 111-115: Added single instance specific settings
     single_instance_id: str = os.getenv("SINGLE_INSTANCE_ID", "gateway-1")
-    single_instance_port: int = int(os.getenv("SINGLE_INSTANCE_PORT", "8000"))
+    # Line 114: Changed default single instance port from 8000 to 8001
+    # Reason: Update default port to 8001 as per requirements
+    single_instance_port: int = int(os.getenv("SINGLE_INSTANCE_PORT", "8001"))
     single_instance_host: str = os.getenv("SINGLE_INSTANCE_HOST", "0.0.0.0")
     
     # Cluster Configuration (NEW)
@@ -233,8 +244,16 @@ def get_settings(env_name: Optional[str] = None, env_file_path: Optional[str] = 
         Lines 196-203: Added support for loading from external .env files
         This allows switching between .env, .env.dev, .env.prod without code changes
     """
+    # Line 204-215: Lazy import of EnvironmentLoader to fix circular import
+    # Reason: Importing EnvironmentLoader at module level causes circular import:
+    #   - run.py imports get_settings from app.settings
+    #   - app.settings imports EnvironmentLoader at top level
+    #   - If EnvironmentLoader or dependencies import get_settings, circular import occurs
+    # Solution: Import EnvironmentLoader only when needed (lazy import)
+    from app.utils.env_loader import EnvironmentLoader
+    
     # NEW: Load environment file before creating Settings instance
-    # Line 204-210: Environment file loading logic
+    # Line 216-222: Environment file loading logic
     if env_file_path:
         EnvironmentLoader.load_environment(base_path=os.path.dirname(env_file_path))
         # Override env_file in Config
@@ -260,9 +279,14 @@ def reload_settings(env_name: Optional[str] = None, env_file_path: Optional[str]
         New Settings instance
         
     Note:
-        Lines 212-225: New function to reload settings without cache
+        Lines 227-242: New function to reload settings without cache
         Useful for testing or runtime environment switching
     """
+    # Line 228-230: Lazy import of EnvironmentLoader to fix circular import
+    # Reason: Same circular import issue as in get_settings()
+    # Solution: Import only when needed
+    from app.utils.env_loader import EnvironmentLoader
+    
     # Clear cache to force reload
     get_settings.cache_clear()
     
@@ -283,7 +307,12 @@ def get_available_environments() -> List[str]:
         List of available environment names
         
     Note:
-        Lines 227-234: New utility function to discover available .env files
+        Lines 244-252: New utility function to discover available .env files
     """
+    # Line 245-247: Lazy import of EnvironmentLoader to fix circular import
+    # Reason: Same circular import issue as in get_settings()
+    # Solution: Import only when needed
+    from app.utils.env_loader import EnvironmentLoader
+    
     return EnvironmentLoader.get_available_environments()
 

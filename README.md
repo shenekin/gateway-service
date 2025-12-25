@@ -45,6 +45,7 @@ Client → Gateway → [Auth] → [Rate Limit] → [Route Match] → [Load Balan
 
 ```
 gateway-service/
+├── run.py                      # Unified entry point - *Added: 2024-12-19*
 ├── app/
 │   ├── __init__.py
 │   ├── main.py                 # Main application entry point
@@ -123,9 +124,28 @@ cp .env.dev .env
 
 5. Run the service:
 ```bash
+# Recommended: Use unified entry point (run.py)
+python run.py
+
+# With development environment
+python run.py --env dev --reload
+
+# With production environment
+python run.py --env prod
+
+# With custom host and port
+python run.py --host 0.0.0.0 --port 9000
+
+# With auto-create environment file
+python run.py --env dev --create-env
+
+# With database initialization
+python run.py --env dev --init-db
+
+# Legacy: Direct execution (deprecated)
 python -m app.main
 # Or using uvicorn directly:
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
 ```
 
 ## Configuration
@@ -136,7 +156,7 @@ Key environment variables (see `.env.dev` for full list):
 
 - `ENVIRONMENT`: Environment name (default, dev, prod)
 - `HOST`: Server host (default: 0.0.0.0)
-- `PORT`: Server port (default: 8000)
+- `PORT`: Server port (default: 8001) - *Updated: 2024-12-19*
 - `JWT_SECRET_KEY`: JWT secret key
 - `JWT_ALGORITHM`: JWT algorithm (HS256 or RS256)
 - `REDIS_HOST`: Redis host
@@ -497,6 +517,7 @@ Test files:
 - `tests/test_env_loader.py`: Environment loader tests - *Added: 2024-12-19*
 - `tests/test_settings_env_switching.py`: Environment switching tests - *Added: 2024-12-19*
 - `tests/test_settings_cluster.py`: Cluster configuration tests - *Added: 2024-12-19*
+- `tests/test_run.py`: Unified entry point tests - *Added: 2024-12-19*
 
 ## Deployment
 
@@ -703,7 +724,171 @@ Each `.env` file includes:
 - Nacos single and cluster configurations
 - All other gateway service settings
 
+## Running the Service
+
+*Feature added: 2024-12-19*
+
+The gateway service provides a unified entry point (`run.py`) for starting the service with various configuration options.
+
+### Basic Usage
+
+```bash
+# Start with default settings
+python run.py
+
+# Start with development environment
+python run.py --env dev
+
+# Start with production environment
+python run.py --env prod
+```
+
+### Command Line Options
+
+```bash
+python run.py [OPTIONS]
+
+Options:
+  --env {default,dev,prod}     Environment name
+  --host HOST                  Host to bind to (default: from settings)
+  --port PORT                  Port to bind to (default: 8001)
+  --reload                     Enable auto-reload (development)
+  --workers N                  Number of worker processes
+  --deployment-mode {single,cluster}  Deployment mode
+  --log-level {debug,info,warning,error,critical}  Log level
+  --create-env                 Create example .env file if missing
+  --init-db                    Initialize database before starting
+```
+
+### Examples
+
+```bash
+# Development with auto-reload
+python run.py --env dev --reload
+
+# Production with multiple workers
+python run.py --env prod --workers 4
+
+# Custom host and port
+python run.py --host 127.0.0.1 --port 9000
+
+# With environment file auto-creation
+python run.py --env dev --create-env
+
+# With database initialization
+python run.py --env dev --init-db
+
+# Cluster mode
+python run.py --env prod --deployment-mode cluster
+```
+
+### Port Configuration
+
+The default port has been updated to **8001** (previously 8000). This can be configured via:
+- Environment variable: `PORT=8001`
+- Command line: `python run.py --port 8001`
+- Settings file: Update `.env` file with `PORT=8001`
+
 ## Changelog
+
+### 2025-12-25 - JWT Import Fix
+
+**Bug Fixed:**
+- Fixed JWT import error: `ModuleNotFoundError: No module named 'jwt'`
+
+**Root Cause:**
+- Code in `app/middleware/auth.py` uses PyJWT API (`jwt.decode()`, `jwt.ExpiredSignatureError`, `jwt.InvalidTokenError`)
+- `requirements.txt` only had `python-jose` which has a different API
+- PyJWT package was missing from dependencies
+- When importing `jwt` module, Python couldn't find it because PyJWT wasn't installed
+
+**Solution:**
+- Added `PyJWT==2.8.0` to `requirements.txt`
+- Added explanatory comments in `app/middleware/auth.py` (lines 5-15)
+- Import statement `import jwt` is correct for PyJWT package
+
+**Files Modified:**
+- `requirements.txt`: Added PyJWT==2.8.0 (line 13)
+- `app/middleware/auth.py`: Added root cause analysis comments (lines 5-15)
+
+**New Tests:**
+- `tests/test_jwt_import_fix.py`: 11 test methods covering:
+  - JWT module import
+  - JWT function availability
+  - JWT exception classes
+  - Auth middleware import and initialization
+  - JWT decode functionality
+  - Token expiration handling
+  - Invalid token handling
+  - Authentication flow
+
+**Verification:**
+- JWT module can be imported successfully
+- Auth middleware can be initialized
+- JWT authentication works correctly
+- All existing functionality preserved
+
+### 2025-12-25 - Circular Import Fix
+
+**Bug Fixed:**
+- Fixed circular import error: `ImportError: cannot import name 'get_settings' from partially initialized module 'app.settings'`
+
+**Root Cause:**
+- `app/settings.py` imported `EnvironmentLoader` at module level (line 9)
+- When `run.py` imported `get_settings` from `app.settings`, Python started loading the module
+- The top-level import of `EnvironmentLoader` created a circular dependency chain
+- This caused the "partially initialized module" error
+
+**Solution:**
+- Changed `EnvironmentLoader` import from top-level to lazy import (inside functions)
+- Lazy imports break the circular dependency by deferring import until function execution
+- Applied fix to `get_settings()`, `reload_settings()`, and `get_available_environments()` functions
+
+**Files Modified:**
+- `app/settings.py`: 
+  - Line 9: Removed top-level `EnvironmentLoader` import
+  - Lines 204-215: Added lazy import in `get_settings()`
+  - Lines 228-230: Added lazy import in `reload_settings()`
+  - Lines 245-247: Added lazy import in `get_available_environments()`
+
+**New Tests:**
+- `tests/test_circular_import_fix.py`: 10 test methods covering circular import scenarios
+
+**Verification:**
+- All imports now work without circular import errors
+- Project can start successfully using `python run.py`
+- All existing functionality preserved
+
+### 2024-12-19 - Unified Entry Point and Port Update
+
+**New Features:**
+- Added unified entry point `run.py` for starting the gateway service
+- Updated default port from 8000 to 8001
+- Added command-line argument parsing for flexible configuration
+- Added support for environment file auto-creation on startup
+- Added support for database initialization on startup
+- Added deployment mode selection via command line
+- Added worker process configuration
+- Added log level configuration via command line
+
+**New Files:**
+- `run.py`: Unified entry point script - *Added: 2024-12-19*
+
+**Modified Files:**
+- `app/settings.py`: Updated default port to 8001 (line 19) - *Updated: 2024-12-19*
+- `app/settings.py`: Updated single instance port to 8001 (line 114) - *Updated: 2024-12-19*
+- `scripts/create_env_examples.py`: Updated default port to 8001 - *Updated: 2024-12-19*
+- `Dockerfile`: Updated port to 8001 and changed CMD to use run.py - *Updated: 2024-12-19*
+- `app/main.py`: Added deprecation warning for direct execution - *Updated: 2024-12-19*
+- `tests/test_settings.py`: Updated port assertion to 8001 - *Updated: 2024-12-19*
+
+**New Tests:**
+- `tests/test_run.py`: Comprehensive tests for run.py entry point - *Added: 2024-12-19*
+
+**Port Changes:**
+- Default port changed from 8000 to 8001 across all configuration files
+- All gateway service port references updated to 8001
+- Backend service ports remain unchanged (still 8000)
 
 ### 2024-12-19 - Database Initialization and Auto Environment Creation
 
@@ -750,6 +935,8 @@ Each `.env` file includes:
 - `tests/test_settings_cluster.py`: Cluster configuration tests
 - `tests/test_env_auto_create.py`: Environment auto-creation tests - *Added: 2024-12-19*
 - `tests/test_database_init.py`: Database initialization tests - *Added: 2024-12-19*
+- `tests/test_circular_import_fix.py`: Circular import fix tests - *Added: 2025-12-25*
+- `tests/test_jwt_import_fix.py`: JWT import fix tests - *Added: 2025-12-25*
 
 **Modified Files:**
 - `app/settings.py`: Added cluster configuration fields (lines 104-158)

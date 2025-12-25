@@ -2,6 +2,16 @@
 Authentication middleware for JWT and API key validation
 """
 
+# Line 5: Import jwt from PyJWT package
+# Reason: Bug fix for ModuleNotFoundError: No module named 'jwt'
+# Root Cause:
+#   - Code uses PyJWT API (jwt.decode(), jwt.ExpiredSignatureError, jwt.InvalidTokenError)
+#   - requirements.txt only had python-jose which has different API
+#   - PyJWT package was missing from requirements.txt
+# Solution:
+#   - Added PyJWT==2.8.0 to requirements.txt
+#   - Import statement 'import jwt' is correct for PyJWT package
+#   - PyJWT provides the jwt module that this code expects
 import jwt
 from typing import Optional, Callable
 from fastapi import Request, HTTPException, status

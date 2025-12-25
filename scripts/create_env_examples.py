@@ -24,7 +24,8 @@ def create_env_example_file(file_path: Path, env_name: str, deployment_mode: str
 ENVIRONMENT={env_name}
 DEBUG={'true' if env_name == 'dev' else 'false'}
 HOST=0.0.0.0
-PORT=8000
+# Changed default port from 8000 to 8001
+PORT=8001
 
 # SSL/TLS Configuration
 SSL_ENABLED={'true' if env_name == 'prod' else 'false'}
@@ -48,7 +49,8 @@ CLUSTER_ENABLED={'true' if is_cluster else 'false'}
 
 # Single Instance Configuration
 SINGLE_INSTANCE_ID=gateway-{env_name}-1
-SINGLE_INSTANCE_PORT=8000
+# Changed default port from 8000 to 8001
+SINGLE_INSTANCE_PORT=8001
 SINGLE_INSTANCE_HOST=0.0.0.0
 
 # Cluster Configuration

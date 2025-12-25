@@ -249,8 +249,15 @@ async def gateway_handler(request: Request, path: str) -> Response:
 
 
 if __name__ == "__main__":
+    """
+    Direct execution of main.py is deprecated.
+    Please use 'python run.py' instead for the unified entry point.
+    """
     import uvicorn
     from app.settings import get_settings
+    
+    print("Warning: Direct execution of app.main is deprecated.")
+    print("Please use 'python run.py' instead for the unified entry point.")
     
     settings = get_settings()
     

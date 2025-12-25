@@ -11,7 +11,8 @@ def test_settings_default_values():
     settings = Settings()
     
     assert settings.host == "0.0.0.0"
-    assert settings.port == 8000
+    # Updated port assertion from 8000 to 8001
+    assert settings.port == 8001
     assert settings.debug is False
 
 
