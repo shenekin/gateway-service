@@ -1,0 +1,37 @@
+gateway-service/
+├── app/
+│   ├── main.py
+│   ├── settings.py
+│   ├── bootstrap.py
+│   ├── core/
+│   │   ├── router.py
+│   │   ├── proxy.py
+│   │   ├── discovery.py
+│   │   ├── load_balancer.py
+│   │   ├── circuit_breaker.py
+│   │   └── retry.py
+│   ├── middleware/
+│   │   ├── auth.py
+│   │   ├── rbac.py
+│   │   ├── rate_limit.py
+│   │   ├── logging.py
+│   │   └── tracing.py
+│   ├── adapters/
+│   │   ├── huaweicloud.py   
+│   ├── models/
+│   │   ├── route.py
+│   │   └── context.py
+│   └── utils/
+│       └── crypto.py
+├── config/
+│   ├── routes.yaml
+│   └── services.yaml
+├── requirements.txt
+├── Dockerfile
+└── README.md
+nacos-docker/
+├─ docker-compose.yml
+├─ .env             # default
+├─ .env.dev         # development
+├─ .env.prod        # production
+

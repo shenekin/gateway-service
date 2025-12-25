@@ -1,0 +1,16 @@
+| Status Code | Meaning                  | Applicable Scenarios                                                                 |
+|-------------|--------------------------|-------------------------------------------------------------------------------------|
+| 200         | OK                       | Request succeeded (GET/POST/PUT/DELETE, etc., business processing successful)        |
+| 201         | Created                  | Resource created successfully (e.g., creating projects, ECS instances, tasks)        |
+| 204         | No Content               | Request succeeded with no returned data (e.g., deleting resources, clearing logs)     |
+| 400         | Bad Request              | Invalid request parameters (missing parameters, incorrect format, type mismatch)     |
+| 401         | Unauthorized             | Unauthenticated (not logged in, token expired, invalid token)                        |
+| 403         | Forbidden                | Insufficient permissions (regular users operating administrator resources, no project access permission) |
+| 404         | Not Found                | Resource does not exist (querying non-existent project ID, ECS ID, task ID)          |
+| 405         | Method Not Allowed       | Request method not supported (using GET to request a POST interface, using DELETE to request a GET interface) |
+| 409         | Conflict                 | Resource conflict (creating a project with a duplicate name, repeatedly binding an ECS instance to a project) |
+| 429         | Too Many Requests        | Request frequency too high (gateway rate limiting, interface rate limiting)          |
+| 500         | Internal Server Error    | Internal server error (database exception, third-party interface call failure, business logic exception) |
+| 502         | Bad Gateway              | Gateway error (the service is not started or responds abnormally when the gateway forwards requests to the service) |
+| 503         | Service Unavailable      | Service unavailable (service circuit breaking, degradation, under maintenance)        |
+| 504         | Gateway Timeout          | Gateway timeout (service processing timeout, e.g., cloud vendor interface response timeout when creating an ECS instance) |
