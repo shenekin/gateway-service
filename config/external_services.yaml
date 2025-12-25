@@ -1,0 +1,352 @@
+# External Services Configuration Checklist
+# This file lists all external services and dependencies required for gateway-service
+# Use this file to prepare all external dependencies before starting the gateway service
+# Date: 2025-12-25
+
+# ============================================================================
+# REQUIRED SERVICES (Must be running for gateway to function)
+# ============================================================================
+
+required_services:
+  # Redis - Required for rate limiting
+  redis:
+    name: "Redis"
+    purpose: "Rate limiting storage and token bucket algorithm"
+    required: true
+    default_host: "localhost"
+    default_port: 6379
+    configuration:
+      - REDIS_HOST: "Redis server hostname or IP"
+      - REDIS_PORT: "Redis server port (default: 6379)"
+      - REDIS_PASSWORD: "Redis password (optional)"
+      - REDIS_DB: "Redis database number (default: 0)"
+      - REDIS_POOL_SIZE: "Connection pool size (default: 10)"
+    installation:
+      docker: "docker run -d --name redis -p 6379:6379 redis:latest"
+      native: "apt-get install redis-server && systemctl start redis"
+    health_check: "redis-cli ping"
+    notes: "Redis is required for rate limiting functionality. Without Redis, rate limiting will fail."
+
+  # MySQL - Required for API key storage and database operations
+  mysql:
+    name: "MySQL"
+    purpose: "Database for API keys, routes, service instances, audit logs"
+    required: true
+    default_host: "localhost"
+    default_port: 3306
+    configuration:
+      - MYSQL_HOST: "MySQL server hostname or IP"
+      - MYSQL_PORT: "MySQL server port (default: 3306)"
+      - MYSQL_USER: "MySQL username (default: gateway_user)"
+      - MYSQL_PASSWORD: "MySQL password"
+      - MYSQL_DATABASE: "Database name (default: gateway_db)"
+      - MYSQL_POOL_SIZE: "Connection pool size (default: 10)"
+      - MYSQL_MAX_OVERFLOW: "Max overflow connections (default: 20)"
+    installation:
+      docker: "docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=rootpass -e MYSQL_DATABASE=gateway_db -e MYSQL_USER=gateway_user -e MYSQL_PASSWORD=gateway_password mysql:8.0"
+      native: "apt-get install mysql-server && systemctl start mysql"
+    initialization:
+      script: "scripts/database/init_database.py"
+      sql_file: "scripts/database/init_database.sql"
+    health_check: "mysql -u gateway_user -p -h localhost -e 'SELECT 1'"
+    notes: "MySQL is required for API key storage and database operations. Run init_database.py to create schema."
+
+# ============================================================================
+# OPTIONAL SERVICES (Required based on configuration)
+# ============================================================================
+
+optional_services:
+  # Service Discovery - Choose one: Nacos, Consul, or Static
+  service_discovery:
+    name: "Service Discovery"
+    purpose: "Service instance discovery and registration"
+    required: false
+    options:
+      nacos:
+        name: "Nacos"
+        default_host: "localhost"
+        default_port: 8848
+        configuration:
+          - SERVICE_DISCOVERY_TYPE: "nacos"
+          - NACOS_SERVER_ADDRESSES: "localhost:8848 (or comma-separated list)"
+          - NACOS_NAMESPACE: "Namespace (default: public)"
+          - NACOS_GROUP: "Group name (default: DEFAULT_GROUP)"
+        installation:
+          docker: "docker run -d --name nacos -p 8848:8848 nacos/nacos-server:latest"
+        health_check: "curl http://localhost:8848/nacos/v1/console/health"
+        notes: "Nacos is the default service discovery. Can use static configuration instead."
+      
+      consul:
+        name: "Consul"
+        default_host: "localhost"
+        default_port: 8500
+        configuration:
+          - SERVICE_DISCOVERY_TYPE: "consul"
+          - CONSUL_HOST: "Consul server hostname or IP"
+          - CONSUL_PORT: "Consul server port (default: 8500)"
+        installation:
+          docker: "docker run -d --name consul -p 8500:8500 consul:latest"
+        health_check: "curl http://localhost:8500/v1/status/leader"
+        notes: "Alternative to Nacos. Requires Consul server running."
+      
+      etcd:
+        name: "etcd"
+        default_host: "localhost"
+        default_port: 2379
+        configuration:
+          - SERVICE_DISCOVERY_TYPE: "etcd"
+          - ETCD_HOST: "etcd server hostname or IP"
+          - ETCD_PORT: "etcd server port (default: 2379)"
+        installation:
+          docker: "docker run -d --name etcd -p 2379:2379 quay.io/coreos/etcd:latest"
+        health_check: "etcdctl endpoint health"
+        notes: "Alternative to Nacos. Requires etcd server running."
+      
+      static:
+        name: "Static Configuration"
+        configuration:
+          - SERVICE_DISCOVERY_TYPE: "static"
+        notes: "Uses config/services.yaml file. No external service required."
+
+  # Distributed Tracing - Optional but recommended
+  tracing:
+    name: "Jaeger"
+    purpose: "Distributed tracing for request tracking"
+    required: false
+    default_host: "localhost"
+    default_port: 6831
+    configuration:
+      - TRACING_ENABLED: "true or false (default: true)"
+      - JAEGER_AGENT_HOST: "Jaeger agent hostname or IP"
+      - JAEGER_AGENT_PORT: "Jaeger agent port (default: 6831)"
+    installation:
+      docker: "docker run -d --name jaeger -p 6831:6831/udp -p 16686:16686 jaegertracing/all-in-one:latest"
+    ui_url: "http://localhost:16686"
+    health_check: "curl http://localhost:16686"
+    notes: "Jaeger is optional but recommended for production. Disable with TRACING_ENABLED=false."
+
+  # Monitoring - Optional but recommended
+  monitoring:
+    name: "Prometheus"
+    purpose: "Metrics collection and monitoring"
+    required: false
+    default_port: 9090
+    configuration:
+      - PROMETHEUS_ENABLED: "true or false (default: true)"
+      - METRICS_PORT: "Metrics endpoint port (default: 9090)"
+    installation:
+      docker: "docker run -d --name prometheus -p 9090:9090 prom/prometheus:latest"
+    scrape_endpoint: "http://gateway-service:9090/metrics"
+    notes: "Prometheus is optional. Metrics are exposed at /metrics endpoint."
+
+# ============================================================================
+# BACKEND SERVICES (Required for gateway to route requests)
+# ============================================================================
+
+backend_services:
+  # These services are expected to be running and registered with service discovery
+  # Gateway will route requests to these services based on route configuration
+  
+  project_service:
+    name: "Project Service"
+    purpose: "Handles project-related operations"
+    routes:
+      - "/projects"
+      - "/projects/{project_id}"
+    expected_instances:
+      - "http://project-service-1:8000"
+      - "http://project-service-2:8000"
+    health_check: "/health"
+    notes: "Must be running and registered with service discovery"
+  
+  auth_service:
+    name: "Auth Service"
+    purpose: "Handles authentication operations"
+    routes:
+      - "/auth/login"
+      - "/auth/logout"
+      - "/auth/register"
+      - "/auth/refresh"
+    expected_instances:
+      - "http://auth-service-1:8000"
+      - "http://auth-service-2:8000"
+    health_check: "/health"
+    notes: "Must be running and registered with service discovery"
+  
+  ecs_service:
+    name: "ECS Service"
+    purpose: "Handles ECS instance operations"
+    routes:
+      - "/ecs"
+      - "/ecs/{ecs_id}"
+    expected_instances:
+      - "http://ecs-service-1:8000"
+    health_check: "/health"
+    notes: "Must be running and registered with service discovery"
+  
+  dashboard_service:
+    name: "Dashboard Service"
+    purpose: "Handles dashboard operations"
+    routes:
+      - "/dashboard"
+    expected_instances:
+      - "http://dashboard-service-1:8000"
+    health_check: "/health"
+    notes: "Must be running and registered with service discovery"
+
+# ============================================================================
+# CLUSTER MODE SERVICES (Required only if using cluster deployment)
+# ============================================================================
+
+cluster_services:
+  # These services are only required when DEPLOYMENT_MODE=cluster
+  
+  redis_cluster:
+    name: "Redis Cluster"
+    required_when: "REDIS_CLUSTER_ENABLED=true"
+    configuration:
+      - REDIS_CLUSTER_ENABLED: "true"
+      - REDIS_CLUSTER_NODES: "node1:6379,node2:6379,node3:6379"
+      - REDIS_CLUSTER_PASSWORD: "Cluster password (optional)"
+    notes: "Required only for cluster mode. Use single Redis instance for single mode."
+  
+  mysql_cluster:
+    name: "MySQL Cluster"
+    required_when: "MYSQL_CLUSTER_ENABLED=true"
+    configuration:
+      - MYSQL_CLUSTER_ENABLED: "true"
+      - MYSQL_CLUSTER_NODES: "db1:3306,db2:3306,db3:3306"
+      - MYSQL_CLUSTER_READ_REPLICAS: "replica1:3306,replica2:3306"
+      - MYSQL_CLUSTER_WRITE_NODE: "db1:3306"
+    notes: "Required only for cluster mode. Use single MySQL instance for single mode."
+  
+  nacos_cluster:
+    name: "Nacos Cluster"
+    required_when: "NACOS_CLUSTER_ENABLED=true"
+    configuration:
+      - NACOS_CLUSTER_ENABLED: "true"
+      - NACOS_CLUSTER_NODES: "nacos1:8848,nacos2:8848,nacos3:8848"
+    notes: "Required only for cluster mode. Use single Nacos instance for single mode."
+
+# ============================================================================
+# DEPENDENCY CHECKLIST
+# ============================================================================
+
+checklist:
+  before_starting:
+    - name: "Install Python 3.10+"
+      command: "python3 --version"
+      expected: "Python 3.10.x or higher"
+    
+    - name: "Install Python dependencies"
+      command: "pip install -r requirements.txt"
+      expected: "All packages installed successfully"
+    
+    - name: "Start Redis"
+      command: "redis-cli ping"
+      expected: "PONG"
+      required: true
+    
+    - name: "Start MySQL"
+      command: "mysql -u gateway_user -p -e 'SELECT 1'"
+      expected: "Connection successful"
+      required: true
+    
+    - name: "Initialize Database"
+      command: "python scripts/database/init_database.py"
+      expected: "Database initialized successfully"
+      required: true
+    
+    - name: "Start Service Discovery (if not using static)"
+      command: "Check service discovery health endpoint"
+      expected: "Service discovery responding"
+      required: false
+    
+    - name: "Start Jaeger (optional)"
+      command: "curl http://localhost:16686"
+      expected: "Jaeger UI accessible"
+      required: false
+    
+    - name: "Start Backend Services"
+      command: "Check backend service health endpoints"
+      expected: "All backend services healthy"
+      required: true
+    
+    - name: "Configure Environment Variables"
+      command: "Check .env file exists and configured"
+      expected: ".env file with all required variables"
+      required: true
+
+# ============================================================================
+# QUICK START COMMANDS
+# ============================================================================
+
+quick_start:
+  # Start all required services using Docker Compose
+  docker_compose: |
+    version: '3.8'
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - "6379:6379"
+      
+      mysql:
+        image: mysql:8.0
+        ports:
+          - "3306:3306"
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: gateway_db
+          MYSQL_USER: gateway_user
+          MYSQL_PASSWORD: gateway_password
+      
+      nacos:
+        image: nacos/nacos-server:latest
+        ports:
+          - "8848:8848"
+      
+      jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+          - "6831:6831/udp"
+          - "16686:16686"
+  
+  # Manual start commands
+  manual_start: |
+    # Start Redis
+    docker run -d --name redis -p 6379:6379 redis:latest
+    
+    # Start MySQL
+    docker run -d --name mysql -p 3306:3306 \
+      -e MYSQL_ROOT_PASSWORD=rootpass \
+      -e MYSQL_DATABASE=gateway_db \
+      -e MYSQL_USER=gateway_user \
+      -e MYSQL_PASSWORD=gateway_password \
+      mysql:8.0
+    
+    # Initialize database
+    python scripts/database/init_database.py
+    
+    # Start Nacos (optional)
+    docker run -d --name nacos -p 8848:8848 nacos/nacos-server:latest
+    
+    # Start Jaeger (optional)
+    docker run -d --name jaeger -p 6831:6831/udp -p 16686:16686 \
+      jaegertracing/all-in-one:latest
+
+# ============================================================================
+# VERIFICATION SCRIPT
+# ============================================================================
+
+verification:
+  script_path: "scripts/verify_external_services.py"
+  checks:
+    - redis_connection
+    - mysql_connection
+    - database_initialized
+    - service_discovery_available
+    - backend_services_healthy
+    - jaeger_available (optional)
+    - log_directory_writable
+
