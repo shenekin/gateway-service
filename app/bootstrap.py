@@ -73,7 +73,8 @@ def create_app() -> FastAPI:
     async def shutdown_event():
         """Cleanup on shutdown"""
         await app.state.proxy_service.close()
-        rate_limit_middleware = RateLimitMiddleware()
+        # Create instance for cleanup (app parameter required)
+        rate_limit_middleware = RateLimitMiddleware(app)
         await rate_limit_middleware.close_redis()
     
     return app

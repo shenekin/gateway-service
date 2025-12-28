@@ -5,17 +5,23 @@ Logging middleware for request/response logging with separate log files
 import json
 import time
 from typing import Callable
-from fastapi import Request, Response
+from fastapi import Request, Response, FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware
 from datetime import datetime
 from app.settings import get_settings
 from app.utils.log_manager import LogManager
 
 
-class LoggingMiddleware:
+class LoggingMiddleware(BaseHTTPMiddleware):
     """Logging middleware for structured logging with separate log files"""
     
-    def __init__(self):
-        """Initialize logging middleware"""
+    def __init__(self, app: FastAPI):
+        """Initialize logging middleware
+        
+        Args:
+            app: FastAPI application instance
+        """
+        super().__init__(app)
         # Line 19-20: Initialize log manager for separate log files
         # Reason: Use LogManager to handle different log types (request, error, access, audit)
         # This ensures different log types are saved to separate .log files
@@ -106,7 +112,7 @@ class LoggingMiddleware:
                 error_data
             )
     
-    async def __call__(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """
         Middleware execution with separate log files
         

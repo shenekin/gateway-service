@@ -35,7 +35,28 @@ class LogManager:
         Reason: Ensure log directory exists before creating log files
         """
         log_dir = Path(self.settings.log_directory)
-        log_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            log_dir.mkdir(parents=True, exist_ok=True)
+        except PermissionError:
+            # If permission denied, try to use a fallback directory in the current working directory
+            fallback_dir = Path(os.getcwd()) / "logs"
+            try:
+                fallback_dir.mkdir(parents=True, exist_ok=True)
+                # Update settings to use fallback directory
+                self.settings.log_directory = str(fallback_dir)
+                # Update all log file paths to use fallback directory
+                self.settings.log_file_path = str(fallback_dir / "gateway.log")
+                self.settings.log_request_file = str(fallback_dir / "request.log")
+                self.settings.log_error_file = str(fallback_dir / "error.log")
+                self.settings.log_access_file = str(fallback_dir / "access.log")
+                self.settings.log_audit_file = str(fallback_dir / "audit.log")
+                self.settings.log_application_file = str(fallback_dir / "application.log")
+            except Exception as e:
+                # If fallback also fails, log warning and continue without file logging
+                import logging
+                logging.warning(f"Failed to create log directory {log_dir} and fallback {fallback_dir}: {e}. File logging disabled.")
+                # Disable file logging by setting paths to None or empty
+                self.settings.log_directory = None
     
     def _create_file_handler(
         self,

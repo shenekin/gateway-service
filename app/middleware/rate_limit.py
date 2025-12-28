@@ -4,16 +4,22 @@ Rate limiting middleware using Redis
 
 import time
 from typing import Optional, Callable
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware
 import redis.asyncio as aioredis
 from app.settings import get_settings
 
 
-class RateLimitMiddleware:
+class RateLimitMiddleware(BaseHTTPMiddleware):
     """Rate limiting middleware using token bucket algorithm"""
     
-    def __init__(self):
-        """Initialize rate limiting middleware"""
+    def __init__(self, app: FastAPI):
+        """Initialize rate limiting middleware
+        
+        Args:
+            app: FastAPI application instance
+        """
+        super().__init__(app)
         self.settings = get_settings()
         self.redis_client: Optional[aioredis.Redis] = None
     
@@ -153,7 +159,7 @@ class RateLimitMiddleware:
         client_ip = request.client.host if request.client else "unknown"
         return f"ip:{client_ip}"
     
-    async def __call__(self, request: Request, call_next: Callable) -> any:
+    async def dispatch(self, request: Request, call_next: Callable) -> any:
         """
         Middleware execution
         

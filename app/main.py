@@ -17,11 +17,13 @@ from app.middleware.rate_limit import RateLimitMiddleware
 # Create application
 app = create_app()
 
-# Initialize middleware
-auth_middleware = AuthMiddleware()
+# Initialize middleware instances for direct use in route handlers
+# Note: These are separate instances from the middleware added via app.add_middleware()
+# They are used for direct method calls like authenticate() and check_request_rate_limit()
+auth_middleware = AuthMiddleware(app)
 # Line 20: Removed RBACMiddleware initialization
 # Reason: RBAC functionality removed as per requirements - not being developed at this stage
-rate_limit_middleware = RateLimitMiddleware()
+rate_limit_middleware = RateLimitMiddleware(app)
 
 
 @app.middleware("http")

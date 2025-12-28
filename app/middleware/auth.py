@@ -14,18 +14,24 @@ Authentication middleware for JWT and API key validation
 #   - PyJWT provides the jwt module that this code expects
 import jwt
 from typing import Optional, Callable
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, FastAPI
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from starlette.middleware.base import BaseHTTPMiddleware
 from app.models.context import UserContext
 from app.settings import get_settings
 from app.utils.crypto import CryptoUtils
 
 
-class AuthMiddleware:
+class AuthMiddleware(BaseHTTPMiddleware):
     """Authentication middleware for JWT and API key"""
     
-    def __init__(self):
-        """Initialize authentication middleware"""
+    def __init__(self, app: FastAPI):
+        """Initialize authentication middleware
+        
+        Args:
+            app: FastAPI application instance
+        """
+        super().__init__(app)
         self.settings = get_settings()
         self.security = HTTPBearer(auto_error=False)
         self.crypto_utils = CryptoUtils()
@@ -163,7 +169,7 @@ class AuthMiddleware:
         
         return None
     
-    async def __call__(self, request: Request, call_next: Callable) -> any:
+    async def dispatch(self, request: Request, call_next: Callable) -> any:
         """
         Middleware execution
         

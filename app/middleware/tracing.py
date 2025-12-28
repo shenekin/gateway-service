@@ -3,7 +3,8 @@ Distributed tracing middleware using OpenTelemetry
 """
 
 from typing import Optional, Callable
-from fastapi import Request
+from fastapi import Request, FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -13,11 +14,16 @@ from opentelemetry.trace import Status, StatusCode
 from app.settings import get_settings
 
 
-class TracingMiddleware:
+class TracingMiddleware(BaseHTTPMiddleware):
     """Distributed tracing middleware"""
     
-    def __init__(self):
-        """Initialize tracing middleware"""
+    def __init__(self, app: FastAPI):
+        """Initialize tracing middleware
+        
+        Args:
+            app: FastAPI application instance
+        """
+        super().__init__(app)
         self.settings = get_settings()
         self.tracer: Optional[trace.Tracer] = None
         self._setup_tracing()
@@ -88,7 +94,7 @@ class TracingMiddleware:
         
         return None
     
-    async def __call__(self, request: Request, call_next: Callable) -> any:
+    async def dispatch(self, request: Request, call_next: Callable) -> any:
         """
         Middleware execution
         

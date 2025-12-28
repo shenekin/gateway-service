@@ -1,0 +1,10 @@
+2025-12-28 16:59:19,032 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 16:59:19,056 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 16:59:26,065 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 16:59:26,077 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 17:05:25,948 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 17:05:25,962 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 17:06:47,560 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 17:06:47,574 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 17:41:11,426 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 17:41:11,439 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404

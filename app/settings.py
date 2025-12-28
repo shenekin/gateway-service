@@ -98,15 +98,17 @@ class Settings(BaseSettings):
     # This improves log management, filtering, and analysis
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     log_format: str = os.getenv("LOG_FORMAT", "json")
-    log_file_path: str = os.getenv("LOG_FILE_PATH", "/app/logs/gateway.log")
-    log_directory: str = os.getenv("LOG_DIRECTORY", "/app/logs")
+    # Default log directory: use ./logs for local development, /app/logs for Docker
+    _default_log_dir = os.path.join(os.getcwd(), "logs") if os.path.exists(os.getcwd()) else "/app/logs"
+    log_file_path: str = os.getenv("LOG_FILE_PATH", os.path.join(_default_log_dir, "gateway.log"))
+    log_directory: str = os.getenv("LOG_DIRECTORY", _default_log_dir)
     
     # Separate log file paths for different log types
-    log_request_file: str = os.getenv("LOG_REQUEST_FILE", "/app/logs/request.log")
-    log_error_file: str = os.getenv("LOG_ERROR_FILE", "/app/logs/error.log")
-    log_access_file: str = os.getenv("LOG_ACCESS_FILE", "/app/logs/access.log")
-    log_audit_file: str = os.getenv("LOG_AUDIT_FILE", "/app/logs/audit.log")
-    log_application_file: str = os.getenv("LOG_APPLICATION_FILE", "/app/logs/application.log")
+    log_request_file: str = os.getenv("LOG_REQUEST_FILE", os.path.join(_default_log_dir, "request.log"))
+    log_error_file: str = os.getenv("LOG_ERROR_FILE", os.path.join(_default_log_dir, "error.log"))
+    log_access_file: str = os.getenv("LOG_ACCESS_FILE", os.path.join(_default_log_dir, "access.log"))
+    log_audit_file: str = os.getenv("LOG_AUDIT_FILE", os.path.join(_default_log_dir, "audit.log"))
+    log_application_file: str = os.getenv("LOG_APPLICATION_FILE", os.path.join(_default_log_dir, "application.log"))
     
     # Log rotation configuration
     log_max_bytes: int = int(os.getenv("LOG_MAX_BYTES", "10485760"))  # 10MB
