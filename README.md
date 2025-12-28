@@ -1030,7 +1030,7 @@ log_manager.log_application("Application started", "INFO")
 **Usage:**
 ```bash
 # Verify all external services before starting gateway
-python scripts/verify_external_services.py
+
 
 # Check configuration reference
 cat config/external_services.yaml
