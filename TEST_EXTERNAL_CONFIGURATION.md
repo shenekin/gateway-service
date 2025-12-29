@@ -240,7 +240,7 @@ asyncio.run(test())
 
 #### Nacos
 ```bash
-curl http://localhost:8848/nacos/v1/console/health
+curl http://localhost:8848/nacos/actuator/health
 # Expected: {"status":"UP"}
 ```
 
@@ -460,4 +460,6 @@ python scripts/verify_external_services.py && python scripts/test_vault.py
 - All tests load from `.env.dev` automatically
 - Environment variables take precedence
 - See `EXTERNAL_SERVICES_CHECKLIST.md` for detailed setup
+
+
 

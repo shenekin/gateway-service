@@ -168,8 +168,7 @@ backend_services:
       - "/auth/register"
       - "/auth/refresh"
     expected_instances:
-      - "http://auth-service-1:8000"
-      - "http://auth-service-2:8000"
+      - "http://127.0.0.1:8000"
     health_check: "/health"
     notes: "Must be running and registered with service discovery"
   

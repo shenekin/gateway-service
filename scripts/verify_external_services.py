@@ -65,10 +65,10 @@ class ServiceVerifier:
                 password=self.settings.mysql_password,
                 db=self.settings.mysql_database
             )
-            cursor = await conn.cursor()
-            await cursor.execute("SELECT 1")
-            await cursor.fetchone()
-            await cursor.close()
+            # Use cursor as context manager or call without await
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT 1")
+                await cursor.fetchone()
             conn.close()
             return ("MySQL", True, f"Connected to {self.settings.mysql_host}:{self.settings.mysql_port}")
         except Exception as e:
@@ -93,19 +93,19 @@ class ServiceVerifier:
                 password=self.settings.mysql_password,
                 db=self.settings.mysql_database
             )
-            cursor = await conn.cursor()
             
-            # Check if required tables exist
-            await cursor.execute("""
-                SELECT COUNT(*) FROM information_schema.tables 
-                WHERE table_schema = %s AND table_name IN 
-                ('api_keys', 'routes', 'service_instances', 'rate_limit_records', 'circuit_breaker_states', 'audit_logs')
-            """, (self.settings.mysql_database,))
+            # Use cursor as context manager
+            async with conn.cursor() as cursor:
+                # Check if required tables exist
+                await cursor.execute("""
+                    SELECT COUNT(*) FROM information_schema.tables 
+                    WHERE table_schema = %s AND table_name IN 
+                    ('api_keys', 'routes', 'service_instances', 'rate_limit_records', 'circuit_breaker_states', 'audit_logs')
+                """, (self.settings.mysql_database,))
+                
+                result = await cursor.fetchone()
+                table_count = result[0] if result else 0
             
-            result = await cursor.fetchone()
-            table_count = result[0] if result else 0
-            
-            await cursor.close()
             conn.close()
             
             if table_count >= 6:
@@ -141,7 +141,7 @@ class ServiceVerifier:
                 for address in addresses:
                     host, port = address.strip().split(":")
                     async with httpx.AsyncClient(timeout=2.0) as client:
-                        response = await client.get(f"http://{host}:{port}/nacos/v1/console/health")
+                        response = await client.get(f"http://{host}:{port}/nacos/actuator/health")
                         if response.status_code == 200:
                             return ("Nacos", True, f"Connected to {address}")
                 return ("Nacos", False, f"Could not connect to any Nacos server: {addresses}")

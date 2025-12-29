@@ -88,11 +88,21 @@ CREATE TABLE IF NOT EXISTS rate_limit_records (
     window_end DATETIME NOT NULL COMMENT 'Window end timestamp',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation timestamp',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Update timestamp',
-    UNIQUE KEY uk_identifier_window (identifier, window_type, route_path, window_start),
-    INDEX idx_identifier (identifier),
+
+    UNIQUE KEY uk_identifier_window (
+        identifier(191),
+        window_type,
+        route_path(191),
+        window_start
+    ),
+    INDEX idx_identifier (identifier(191)),
     INDEX idx_window_start (window_start),
     INDEX idx_window_end (window_end)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Rate limiting records';
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci
+  COMMENT='Rate limiting records';
+
 
 -- Table: circuit_breaker_states
 -- Stores circuit breaker states

@@ -30,3 +30,154 @@
 2025-12-28 18:17:09,535 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
 2025-12-28 18:17:21,920 - gateway.error - ERROR - Request failed: GET /register - 404
 2025-12-28 18:17:21,934 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:15,070 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-29 15:02:15,099 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:21,438 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:40,761 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:49,330 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:03:01,726 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 16:02:38,860 - gateway.error - ERROR - Request failed: GET /auth/register - 404
+2025-12-29 16:02:38,880 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 16:07:15,621 - gateway.error - ERROR - Request failed: GET /auth/register - 404
+2025-12-29 16:07:15,633 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 16:19:41,688 - gateway.error - ERROR - Request failed: POST /login - 404
+2025-12-29 16:20:49,254 - gateway.error - ERROR - Request failed: POST /api/auth/login - 404
+2025-12-29 16:21:59,739 - gateway.error - ERROR - Request exception: POST /auth/login
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 98, in receive
+    return self.receive_nowait()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 93, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 78, in call_next
+    message = await recv_stream.receive()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 118, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/logging.py", line 143, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 108, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/tracing.py", line 130, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 274, in app
+    raw_response = await run_endpoint_function(
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/main.py", line 188, in gateway_handler
+    is_allowed, remaining = await rate_limit_middleware.check_request_rate_limit(
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 130, in check_request_rate_limit
+    identifier = self._get_identifier(request)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 149, in _get_identifier
+    user_id = request.state.get("user_id")
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/datastructures.py", line 705, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'get'
+2025-12-29 16:22:56,090 - gateway.error - ERROR - Request exception: POST /auth/login
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 98, in receive
+    return self.receive_nowait()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 93, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 78, in call_next
+    message = await recv_stream.receive()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 118, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/logging.py", line 143, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 108, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/tracing.py", line 130, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 274, in app
+    raw_response = await run_endpoint_function(
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/main.py", line 188, in gateway_handler
+    is_allowed, remaining = await rate_limit_middleware.check_request_rate_limit(
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 130, in check_request_rate_limit
+    identifier = self._get_identifier(request)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 149, in _get_identifier
+    user_id = request.state.get("user_id")
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/datastructures.py", line 705, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'get'
+2025-12-29 16:23:32,241 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:23:59,326 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:25:05,820 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:25:32,192 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:26:24,098 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:27:14,301 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:27:21,439 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:27:22,523 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:29:27,765 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:31:05,315 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:31:34,179 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:33:22,684 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:33:38,189 - gateway.error - ERROR - Request failed: POST /auth/login - 502

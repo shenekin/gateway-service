@@ -14,10 +14,7 @@ services:
       
   auth-service:
     instances:
-      - url: http://auth-service-1:8000
-        weight: 1
-        healthy: true
-      - url: http://auth-service-2:8000
+      - url: http://127.0.0.1:8000
         weight: 1
         healthy: true
     health_check:

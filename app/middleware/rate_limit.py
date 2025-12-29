@@ -146,7 +146,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             Identifier string
         """
         # Try to get user_id from context
-        user_id = request.state.get("user_id")
+        user_id = getattr(request.state, "user_id", None)
         if user_id:
             return f"user:{user_id}"
         

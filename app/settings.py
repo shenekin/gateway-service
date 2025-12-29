@@ -33,8 +33,8 @@ class Settings(BaseSettings):
     ssl_key_path: str = os.getenv("SSL_KEY_PATH", "/app/certs/key.pem")
     
     # JWT
-    jwt_secret_key: str = os.getenv("JWT_SECRET_KEY", "default-secret-key")
-    jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "HS256")
+    jwt_secret_key: str = os.getenv("JWT_SECRET_KEY", "secret_key")
+    jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "RS256")
     jwt_expiration_minutes: int = int(os.getenv("JWT_EXPIRATION_MINUTES", "30"))
     jwt_public_key_path: Optional[str] = os.getenv("JWT_PUBLIC_KEY_PATH")
     jwt_private_key_path: Optional[str] = os.getenv("JWT_PRIVATE_KEY_PATH")
@@ -45,12 +45,12 @@ class Settings(BaseSettings):
     
     # Database
     mysql_host: str = os.getenv("MYSQL_HOST", "localhost")
-    mysql_port: int = int(os.getenv("MYSQL_PORT", "3306"))
-    mysql_user: str = os.getenv("MYSQL_USER", "gateway_user")
-    mysql_password: str = os.getenv("MYSQL_PASSWORD", "gateway_password")
+    mysql_port: int = int(os.getenv("MYSQL_PORT", 3306))
+    mysql_user: str = os.getenv("MYSQL_USER", "root")
+    mysql_password: str = os.getenv("MYSQL_PASSWORD", "1qaz@WSX")
     mysql_database: str = os.getenv("MYSQL_DATABASE", "gateway_db")
-    mysql_pool_size: int = int(os.getenv("MYSQL_POOL_SIZE", "10"))
-    mysql_max_overflow: int = int(os.getenv("MYSQL_MAX_OVERFLOW", "20"))
+    mysql_pool_size: int = int(os.getenv("MYSQL_POOL_SIZE", 10))
+    mysql_max_overflow: int = int(os.getenv("MYSQL_MAX_OVERFLOW", 20))
     
     # Redis
     redis_host: str = os.getenv("REDIS_HOST", "localhost")
@@ -123,6 +123,23 @@ class Settings(BaseSettings):
     # Monitoring
     prometheus_enabled: bool = os.getenv("PROMETHEUS_ENABLED", "true").lower() == "true"
     metrics_port: int = int(os.getenv("METRICS_PORT", "9090"))
+    
+    # Vault Configuration
+    # Line 127-140: Added HashiCorp Vault configuration for secret management
+    # Reason: Centralized secret management using Vault for JWT keys, API keys, and other sensitive data
+    vault_enabled: bool = os.getenv("VAULT_ENABLED", "false").lower() == "true"
+    vault_addr: str = os.getenv("VAULT_ADDR", "http://127.0.0.1:8200")
+    vault_auth_method: str = os.getenv("VAULT_AUTH_METHOD", "approle")  # approle or token
+    vault_role_id: Optional[str] = os.getenv("VAULT_ROLE_ID")
+    vault_secret_id: Optional[str] = os.getenv("VAULT_SECRET_ID")
+    vault_token: Optional[str] = os.getenv("VAULT_TOKEN")
+    vault_timeout: int = int(os.getenv("VAULT_TIMEOUT", "5"))  # Connection timeout in seconds
+    vault_verify: bool = os.getenv("VAULT_VERIFY", "true").lower() == "true"  # SSL verification for HTTPS
+    
+    # Vault Secret Paths
+    jwt_vault_hs256_path: str = os.getenv("JWT_VAULT_HS256_PATH", "secret/jwt/hs256")
+    jwt_vault_rs256_path: str = os.getenv("JWT_VAULT_RS256_PATH", "secret/jwt/rs256")
+    api_key_vault_path: str = os.getenv("API_KEY_VAULT_PATH", "secret/api-keys")
     
     # Security
     trusted_proxies: str = os.getenv("TRUSTED_PROXIES", "127.0.0.1,localhost")

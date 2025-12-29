@@ -19,17 +19,24 @@ class VaultUtil:
     def _connect(self) -> None:
         """Connect to Vault and authenticate"""
         try:
-            # Get Vault configuration from environment
-            vault_addr = os.getenv("VAULT_ADDR", "http://127.0.0.1:8200")
-            vault_auth_method = os.getenv("VAULT_AUTH_METHOD", "approle")
+            # Get Vault configuration from settings (preferred) or environment (fallback)
+            vault_addr = self.settings.vault_addr if hasattr(self.settings, 'vault_addr') else os.getenv("VAULT_ADDR", "http://127.0.0.1:8200")
+            vault_auth_method = self.settings.vault_auth_method if hasattr(self.settings, 'vault_auth_method') else os.getenv("VAULT_AUTH_METHOD", "approle")
+            vault_timeout = self.settings.vault_timeout if hasattr(self.settings, 'vault_timeout') else int(os.getenv("VAULT_TIMEOUT", "5"))
+            vault_verify = self.settings.vault_verify if hasattr(self.settings, 'vault_verify') else os.getenv("VAULT_VERIFY", "true").lower() == "true"
             
-            # Create Vault client
-            self.client = hvac.Client(url=vault_addr)
+            # Create Vault client with timeout and SSL verification
+            self.client = hvac.Client(
+                url=vault_addr,
+                timeout=vault_timeout,
+                verify=vault_verify
+            )
             
             # Authenticate based on method
             if vault_auth_method == "approle":
-                role_id = os.getenv("VAULT_ROLE_ID")
-                secret_id = os.getenv("VAULT_SECRET_ID")
+                # Get credentials from settings (preferred) or environment (fallback)
+                role_id = self.settings.vault_role_id if hasattr(self.settings, 'vault_role_id') else os.getenv("VAULT_ROLE_ID")
+                secret_id = self.settings.vault_secret_id if hasattr(self.settings, 'vault_secret_id') else os.getenv("VAULT_SECRET_ID")
                 
                 if not role_id or not secret_id:
                     raise ValueError("VAULT_ROLE_ID and VAULT_SECRET_ID must be set for approle authentication")
@@ -44,7 +51,8 @@ class VaultUtil:
                 self.client.token = response['auth']['client_token']
                 
             elif vault_auth_method == "token":
-                vault_token = os.getenv("VAULT_TOKEN")
+                # Get token from settings (preferred) or environment (fallback)
+                vault_token = self.settings.vault_token if hasattr(self.settings, 'vault_token') else os.getenv("VAULT_TOKEN")
                 if not vault_token:
                     raise ValueError("VAULT_TOKEN must be set for token authentication")
                 self.client.token = vault_token
@@ -100,10 +108,11 @@ class VaultUtil:
         Returns:
             JWT secret key
         """
+        # Get path from settings (preferred) or environment (fallback)
         if algorithm == "HS256":
-            path = os.getenv("JWT_VAULT_HS256_PATH", "secret/jwt/hs256")
+            path = self.settings.jwt_vault_hs256_path if hasattr(self.settings, 'jwt_vault_hs256_path') else os.getenv("JWT_VAULT_HS256_PATH", "secret/jwt/hs256")
         elif algorithm == "RS256":
-            path = os.getenv("JWT_VAULT_RS256_PATH", "secret/jwt/rs256")
+            path = self.settings.jwt_vault_rs256_path if hasattr(self.settings, 'jwt_vault_rs256_path') else os.getenv("JWT_VAULT_RS256_PATH", "secret/jwt/rs256")
         else:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
         
@@ -130,7 +139,9 @@ class VaultUtil:
         Returns:
             API key value
         """
-        path = os.getenv("API_KEY_VAULT_PATH", f"secret/api-keys/{api_key_name}")
+        # Get base path from settings (preferred) or environment (fallback)
+        base_path = self.settings.api_key_vault_path if hasattr(self.settings, 'api_key_vault_path') else os.getenv("API_KEY_VAULT_PATH", "secret/api-keys")
+        path = f"{base_path}/{api_key_name}" if not base_path.endswith(api_key_name) else base_path
         secret_data = self.read_secret(path)
         
         # Try common key names
