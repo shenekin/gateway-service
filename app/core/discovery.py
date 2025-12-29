@@ -165,9 +165,12 @@ class NacosServiceDiscovery(ServiceDiscovery):
     def __init__(self):
         """Initialize Nacos service discovery"""
         self.settings = get_settings()
-        # Nacos client would be initialized here
-        # from nacos import NacosClient
-        # self.client = NacosClient(...)
+        from app.utils.nacos_client import NacosClientUtil
+        
+        self.nacos_client = NacosClientUtil(
+            server_addresses=self.settings.nacos_server_addresses,
+            namespace=self.settings.nacos_namespace
+        )
     
     async def get_instances(self, service_name: str) -> List[ServiceInstance]:
         """
@@ -179,20 +182,114 @@ class NacosServiceDiscovery(ServiceDiscovery):
         Returns:
             List of service instances
         """
-        # Implementation would use Nacos client
-        # instances = await self.client.list_naming_instance(service_name)
-        # return [ServiceInstance(...) for instance in instances]
-        return []
+        try:
+            instances_data = self.nacos_client.get_service_instances(
+                service_name=service_name,
+                group_name=self.settings.nacos_group,
+                healthy_only=True
+            )
+            
+            instances = []
+            for inst_data in instances_data:
+                # Ensure inst_data is a dictionary
+                if not isinstance(inst_data, dict):
+                    continue
+                
+                # Parse instance data
+                ip = inst_data.get("ip", "")
+                port = inst_data.get("port", 0)
+                weight = inst_data.get("weight", 1.0)
+                healthy = inst_data.get("healthy", True)
+                metadata = inst_data.get("metadata", {})
+                
+                # Build URL
+                if isinstance(metadata, str):
+                    import json
+                    try:
+                        metadata = json.loads(metadata)
+                    except:
+                        metadata = {}
+                elif not isinstance(metadata, dict):
+                    metadata = {}
+                
+                # Use metadata URL if available, otherwise construct from IP:port
+                url = metadata.get("url") if isinstance(metadata, dict) else None
+                if not url:
+                    url = f"http://{ip}:{port}"
+                
+                instance = ServiceInstance(
+                    url=url,
+                    weight=weight,
+                    healthy=healthy,
+                    metadata=metadata if isinstance(metadata, dict) else {}
+                )
+                instances.append(instance)
+            
+            return instances
+        except Exception as e:
+            # Log error but return empty list
+            print(f"Error getting instances from Nacos: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return []
     
     async def register(self, service_name: str, instance: ServiceInstance) -> bool:
-        """Register service instance with Nacos"""
-        # Implementation would use Nacos client
-        return False
+        """
+        Register service instance with Nacos
+        
+        Args:
+            service_name: Name of the service
+            instance: Service instance to register
+            
+        Returns:
+            True if successful
+        """
+        try:
+            # Parse URL to get IP and port
+            from urllib.parse import urlparse
+            parsed = urlparse(instance.url)
+            ip = parsed.hostname or "127.0.0.1"
+            port = parsed.port or 8000
+            
+            return self.nacos_client.register_service(
+                service_name=service_name,
+                ip=ip,
+                port=port,
+                group_name=self.settings.nacos_group,
+                weight=instance.weight,
+                metadata=instance.metadata,
+                healthy=instance.healthy
+            )
+        except Exception as e:
+            print(f"Error registering service with Nacos: {str(e)}")
+            return False
     
     async def deregister(self, service_name: str, instance_url: str) -> bool:
-        """Deregister service instance from Nacos"""
-        # Implementation would use Nacos client
-        return False
+        """
+        Deregister service instance from Nacos
+        
+        Args:
+            service_name: Name of the service
+            instance_url: URL of instance to deregister
+            
+        Returns:
+            True if successful
+        """
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(instance_url)
+            ip = parsed.hostname or "127.0.0.1"
+            port = parsed.port or 8000
+            
+            return self.nacos_client.deregister_service(
+                service_name=service_name,
+                ip=ip,
+                port=port,
+                group_name=self.settings.nacos_group
+            )
+        except Exception as e:
+            print(f"Error deregistering service from Nacos: {str(e)}")
+            return False
 
 
 def create_service_discovery() -> ServiceDiscovery:

@@ -95,6 +95,31 @@ class ProxyService:
         if headers:
             forward_headers.update(headers)
         
+        # Preserve important original headers from context
+        # Content-Type, Accept, and other standard headers should be preserved
+        if context.headers:
+            # Preserve Content-Type for POST/PUT requests (case-insensitive lookup)
+            content_type = None
+            for key, value in context.headers.items():
+                if key.lower() == "content-type":
+                    content_type = value
+                    break
+            if content_type:
+                forward_headers["Content-Type"] = content_type
+            
+            # Preserve Accept header (case-insensitive lookup)
+            accept = None
+            for key, value in context.headers.items():
+                if key.lower() == "accept":
+                    accept = value
+                    break
+            if accept:
+                forward_headers["Accept"] = accept
+        
+        # Note: We don't forward X-API-Key to backend services
+        # Backend services should not require API keys from gateway
+        # Gateway handles API key authentication for client requests only
+        
         # Get circuit breaker for service
         circuit_breaker = self._get_circuit_breaker(context.service_name or "unknown")
         

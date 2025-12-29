@@ -181,3 +181,16 @@ AttributeError: 'State' object has no attribute 'get'
 2025-12-29 16:31:34,179 - gateway.error - ERROR - Request failed: POST /auth/login - 502
 2025-12-29 16:33:22,684 - gateway.error - ERROR - Request failed: POST /auth/login - 502
 2025-12-29 16:33:38,189 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:15:20,913 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:22:34,704 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:22:42,248 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:51:28,994 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-29 17:52:41,652 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:53:43,623 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:54:12,341 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:57:00,749 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:58:06,389 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:58:19,933 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 18:01:01,936 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 18:02:49,087 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 18:03:23,332 - gateway.error - ERROR - Request failed: POST /auth/login - 500
