@@ -519,3 +519,5 @@ AttributeError: 'State' object has no attribute 'get'
 2025-12-30 09:57:43,494 - gateway.error - ERROR - Request failed: POST /auth/login - 429
 2025-12-30 09:59:35,674 - gateway.error - ERROR - Request failed: POST /auth/login - 429
 2025-12-30 09:59:36,481 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:24:25,827 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:24:31,653 - gateway.error - ERROR - Request failed: POST /auth/login - 429
