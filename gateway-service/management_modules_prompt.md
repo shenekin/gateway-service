@@ -106,3 +106,47 @@
 6.  在READDME.md中增加新记录增日期和日期以及功能.
 7.  不能使用任何中文注释.
 
+
+### 模板2：代码迭代优化 2025-12-29 -6
+```
+任务：优化【gateway-service服务模块】，属于【cloud resource management system】项目
+代码规范：严格遵循已提供的Python代码规范[Developer_coding_rules_Principles] 文件规范
+当前问题：【当前redis已经实现针对每一个用户进行限制，我现在需要结合mysql进行整合，请帮我完成】
+优化目标：【如接口响应时间≤100ms/修复xx场景的bug/支持xx新场景】
+功能需求：
+1.  核心功能：当前未看到实际生产中改创建外部哪些依赖东西，比如数据库和表等
+2.  输入参数：【自动生成并注释】
+额外要求：
+1.  不修改原有核心逻辑和对外接口
+2.  标注本次修改的代码行及原因
+3.  生成优化后的单元测试，覆盖新增场景
+4.  通过新增加功能方式，不能修改现有功能业务逻辑和代码（类/函数需要注释）.
+5.  增加测试用例和测试方法和数据.
+6.  在READDME.md中增加新记录增日期和日期以及功能.
+7.  不能使用任何中文注释.
+
+### 模板2：代码迭代优化 2025-12-29 -7
+```
+任务：优化【gateway-service服务模块】，属于【cloud resource management system】项目
+代码规范：严格遵循已提供的Python代码规范[Developer_coding_rules_Principles] 文件规范
+当前问题：【用户可以拿到access + refresh明 auth-service 的登录、签名、过期时间配置都是 OK,下一步不再是“调 JWT”，而是进入 生产级使用阶段】
+优化目标：【如接口响应时间≤100ms/修复xx场景的bug/支持xx新场景】
+功能需求：
+核心功能：
+gateway 验证客户端  access_token
+所有业务服务只信 gateway
+/auth/refresh
+refresh_token 存于Redis
+refresh rotate
+roles / permissions 放 access_token
+gateway → headers 透传 user_id
+审计日志 存入mysql中（login / refresh / revoke）
+2.  输入参数：【自动生成并注释】
+额外要求：
+1.  不修改原有核心逻辑和对外接口
+2.  标注本次修改的代码行及原因
+3.  生成优化后的单元测试，覆盖新增场景
+4.  通过新增加功能方式，不能修改现有功能业务逻辑和代码（类/函数需要注释）.
+5.  增加测试用例和测试方法和数据.
+6.  在READDME.md中增加新记录增日期和日期以及功能.
+7.  不能使用任何中文注释.

@@ -13,9 +13,15 @@ from app.middleware.auth import AuthMiddleware
 # Reason: RBAC functionality removed as per requirements - not being developed at this stage
 # RBAC middleware and related tests have been removed from the project
 from app.middleware.rate_limit import RateLimitMiddleware
+from app.routers import auth
 
 # Create application
 app = create_app()
+
+# Line 19-20: Include authentication router
+# Reason: Add /auth/refresh and /auth/revoke endpoints for token management
+# Solution: Include auth router before other routes
+app.include_router(auth.router)
 
 # Initialize middleware instances for direct use in route handlers
 # Note: These are separate instances from the middleware added via app.add_middleware()
@@ -166,8 +172,14 @@ async def gateway_handler(request: Request, path: str) -> Response:
             return await metrics()
     
     # Authentication
+    # Line 169-183: Enhanced authentication with access_token validation
+    # Reason: Gateway validates client access_token, all backend services trust gateway
+    #         Gateway extracts roles/permissions from access_token and forwards in headers
+    # Solution: Validate access_token, extract user context, forward to backend services
+    
     user_context: Optional[UserContext] = None
     if route.config.auth_required:
+        # Validate access_token from client
         user_context = await auth_middleware.authenticate(request)
         if not user_context:
             raise HTTPException(
@@ -177,6 +189,8 @@ async def gateway_handler(request: Request, path: str) -> Response:
         context.user_context = user_context
         request.state.user_id = user_context.user_id
         request.state.tenant_id = user_context.tenant_id
+        # Roles and permissions are already in user_context from JWT payload
+        # They will be forwarded via context.to_forward_headers()
     
     # Authorization
     # Line 177: Removed RBAC authorization call

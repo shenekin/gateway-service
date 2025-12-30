@@ -68,14 +68,24 @@ class RequestContext(BaseModel):
             headers["X-Span-Id"] = self.span_id
         
         if self.user_context:
+            # Line 70-82: Enhanced header forwarding with user_id and roles/permissions
+            # Reason: All backend services should trust gateway and receive user context
+            #         Gateway validates access_token and forwards user_id in headers
+            # Solution: Always forward user_id, roles, and permissions to backend services
+            
+            # Always forward user_id - backend services trust gateway
             headers["X-User-Id"] = self.user_context.user_id
             headers["X-Active"] = str(self.user_context.is_active).lower()
             
             if self.user_context.tenant_id:
                 headers["X-Tenant-Id"] = self.user_context.tenant_id
             
+            # Forward roles and permissions from access_token
             if self.user_context.roles:
                 headers["X-Roles"] = ",".join(self.user_context.roles)
+            
+            if self.user_context.permissions:
+                headers["X-Permissions"] = ",".join(self.user_context.permissions)
             
             if self.user_context.username:
                 headers["X-Username"] = self.user_context.username

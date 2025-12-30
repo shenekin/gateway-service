@@ -984,6 +984,98 @@ log_manager.log_application("Application started", "INFO")
 
 ## Changelog
 
+### 2025-12-30 - Production-Ready JWT Authentication
+
+**Feature Added:**
+- Production-grade JWT authentication with access_token validation
+- Refresh token management with rotation support
+- Audit logging for authentication events
+- Enhanced header forwarding to backend services
+
+**Purpose:**
+- Gateway validates client access_token, all backend services trust gateway
+- Support refresh token rotation for enhanced security
+- Track authentication events (login, refresh, revoke) for audit and compliance
+- Forward user context (user_id, roles, permissions) to backend services
+
+**Root Cause Analysis:**
+- Previous implementation had basic JWT validation but lacked production features
+- No refresh token management or rotation
+- No audit logging for authentication events
+- Backend services needed user context in headers
+
+**Solution:**
+- Enhanced JWT authentication to extract roles/permissions from access_token
+- Created TokenManager for refresh token storage in Redis with rotation
+- Created AuditLogger for logging authentication events to MySQL
+- Added /auth/refresh and /auth/revoke endpoints
+- Enhanced header forwarding to include user_id, roles, and permissions
+
+**Files Created:**
+- `app/utils/token_manager.py`: Refresh token management with Redis storage (lines 1-175)
+- `app/utils/audit_logger.py`: Audit logging for authentication events (lines 1-145)
+- `app/routers/auth.py`: Authentication endpoints (/auth/refresh, /auth/revoke) (lines 1-200)
+- `tests/test_token_manager.py`: Unit tests for TokenManager (10+ test methods)
+- `tests/test_audit_logger.py`: Unit tests for AuditLogger (5+ test methods)
+- `tests/test_auth_router.py`: Unit tests for auth router (6+ test methods)
+- `scripts/database/update_audit_logs.sql`: Database migration for audit_logs table
+
+**Files Modified:**
+- `app/middleware/auth.py`:
+  - Line 90-106: Enhanced JWT payload extraction with roles/permissions parsing
+  - Reason: Ensure roles and permissions are extracted from access_token
+- `app/models/context.py`:
+  - Line 70-82: Enhanced header forwarding with permissions
+  - Reason: Forward user_id, roles, and permissions to backend services
+- `app/main.py`:
+  - Line 19-20: Added auth router inclusion
+  - Line 169-183: Enhanced authentication comments
+  - Reason: Add /auth/refresh and /auth/revoke endpoints
+- `app/settings.py`:
+  - Line 41-42: Added refresh token configuration
+  - Reason: Support refresh token expiration and rotation settings
+- `app/utils/__init__.py`:
+  - Line 9-10: Added TokenManager and AuditLogger exports
+
+**Features:**
+- **Access Token Validation**: Gateway validates client access_token
+- **Backend Trust**: All backend services trust gateway, receive user context in headers
+- **Refresh Token Management**: Refresh tokens stored in Redis with expiration
+- **Token Rotation**: Old refresh token invalidated when new one is issued (configurable)
+- **Roles/Permissions**: Extracted from access_token and forwarded to backend services
+- **Header Forwarding**: X-User-Id, X-Roles, X-Permissions forwarded to backend services
+- **Audit Logging**: Login, refresh, and revoke events logged to MySQL
+
+**Configuration:**
+```bash
+# JWT Configuration
+JWT_SECRET_KEY=your_secret_key
+JWT_ALGORITHM=RS256
+JWT_EXPIRATION_MINUTES=30
+JWT_REFRESH_EXPIRATION_DAYS=7
+JWT_REFRESH_ROTATION_ENABLED=true
+```
+
+**API Endpoints:**
+- `POST /auth/refresh`: Refresh access token using refresh token
+- `POST /auth/revoke`: Revoke refresh token
+
+**Database Migration:**
+Run the migration script to update audit_logs table:
+```bash
+mysql -u root -p gateway_db < scripts/database/update_audit_logs.sql
+```
+
+**Testing:**
+- Unit tests cover token management, audit logging, and auth endpoints
+- All tests verify error handling and edge cases
+- Mock Redis and MySQL for isolated testing
+
+**Backward Compatibility:**
+- All existing functionality preserved
+- Existing JWT authentication continues to work
+- New features are additive, no breaking changes
+
 ### 2025-12-25 - MySQL Rate Limit Storage Fix
 
 **Issue Fixed:** MySQL `rate_limit_records` table was empty, records only appeared in Redis.

@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     jwt_expiration_minutes: int = int(os.getenv("JWT_EXPIRATION_MINUTES", "30"))
     jwt_public_key_path: Optional[str] = os.getenv("JWT_PUBLIC_KEY_PATH")
     jwt_private_key_path: Optional[str] = os.getenv("JWT_PRIVATE_KEY_PATH")
+    # Line 41-42: Added refresh token configuration
+    # Reason: Support refresh token functionality with configurable expiration
+    #         Refresh tokens have longer expiration than access tokens
+    jwt_refresh_expiration_days: int = int(os.getenv("JWT_REFRESH_EXPIRATION_DAYS", "7"))
+    jwt_refresh_rotation_enabled: bool = os.getenv("JWT_REFRESH_ROTATION_ENABLED", "true").lower() == "true"
     
     # API Key
     api_key_enabled: bool = os.getenv("API_KEY_ENABLED", "true").lower() == "true"

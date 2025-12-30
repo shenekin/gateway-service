@@ -88,6 +88,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 )
             
             # Extract user information from payload
+            # Line 90-106: Enhanced JWT payload extraction with roles/permissions
+            # Reason: Ensure roles and permissions are extracted from access_token
+            #         These are required for authorization and header forwarding
+            # Solution: Extract roles and permissions from JWT payload, default to empty list
+            
             user_id = payload.get("sub") or payload.get("user_id")
             if not user_id:
                 raise HTTPException(
@@ -95,13 +100,23 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     detail="Invalid token: missing user identifier"
                 )
             
+            # Extract roles and permissions from token
+            # These should be included in access_token by auth-service
+            roles = payload.get("roles", [])
+            if isinstance(roles, str):
+                roles = [r.strip() for r in roles.split(",") if r.strip()]
+            
+            permissions = payload.get("permissions", [])
+            if isinstance(permissions, str):
+                permissions = [p.strip() for p in permissions.split(",") if p.strip()]
+            
             return UserContext(
                 user_id=str(user_id),
                 username=payload.get("username"),
                 email=payload.get("email"),
                 tenant_id=payload.get("tenant_id"),
-                roles=payload.get("roles", []),
-                permissions=payload.get("permissions", []),
+                roles=roles,
+                permissions=permissions,
                 is_active=payload.get("is_active", True)
             )
         except jwt.ExpiredSignatureError:
