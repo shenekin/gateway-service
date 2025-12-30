@@ -20,7 +20,7 @@ API Gateway service for Cloud Resource Management System Platform. This service 
 
 - **Request Routing**: Dynamic route matching and forwarding to backend services
 - **Authentication**: JWT and API key authentication support
-- **Rate Limiting**: Token bucket algorithm with Redis backend
+- **Rate Limiting**: Token bucket algorithm with Redis backend, per-user rate limiting support - *Enhanced: 2025-12-25*
 - **Load Balancing**: Multiple strategies (round-robin, least connections, weighted, random)
 - **Circuit Breaker**: Fault tolerance and cascading failure prevention
 - **Retry Logic**: Exponential backoff retry mechanism
@@ -265,6 +265,8 @@ Key environment variables (see `.env.dev` for full list):
 - `REDIS_PORT`: Redis port
 - `SERVICE_DISCOVERY_TYPE`: Service discovery type (nacos, consul, static)
 - `RATE_LIMIT_ENABLED`: Enable rate limiting
+- `RATE_LIMIT_MYSQL_ENABLED`: Enable MySQL storage for rate limit records (default: true) - *Added: 2025-12-25*
+- `RATE_LIMIT_MYSQL_ASYNC`: Use asynchronous MySQL storage (default: true) - *Added: 2025-12-25*
 - `CIRCUIT_BREAKER_ENABLED`: Enable circuit breaker
 
 ### Route Configuration
@@ -982,6 +984,114 @@ log_manager.log_application("Application started", "INFO")
 
 ## Changelog
 
+### 2025-12-25 - MySQL Rate Limit Storage Fix
+
+**Issue Fixed:** MySQL `rate_limit_records` table was empty, records only appeared in Redis.
+
+**Root Cause:**
+- Background tasks created with `asyncio.create_task()` were not being tracked, potentially leading to garbage collection before completion
+- Errors in background tasks were being silently ignored
+- Missing error logging made it impossible to diagnose failures
+- MySQL deprecation warning for `VALUES()` function
+
+**Solution:**
+- Added background task tracking to prevent garbage collection
+- Enhanced error handling and logging for MySQL storage operations
+- Added diagnostic script (`scripts/test_mysql_rate_limit_storage.py`) to test MySQL storage independently
+- **Fixed MySQL deprecation warning**: Updated SQL to use alias syntax (`AS new`) instead of deprecated `VALUES()` function
+
+**Files Modified:**
+- `app/middleware/rate_limit.py`: Added `asyncio` import, background task tracking, enhanced error handling
+- `app/utils/rate_limit_storage.py`: Added comprehensive error logging, fixed SQL deprecation warning
+
+**Files Created:**
+- `scripts/test_mysql_rate_limit_storage.py`: Diagnostic script for MySQL storage testing
+- `MYSQL_STORAGE_FIX.md`: Detailed documentation of the fix
+
+**Testing:**
+```bash
+# Test MySQL storage independently
+python scripts/test_mysql_rate_limit_storage.py
+```
+
+**Configuration:**
+- Ensure `RATE_LIMIT_MYSQL_ENABLED=true` in `.env` file
+- Set `RATE_LIMIT_MYSQL_ASYNC=true` for async storage (faster but may not complete) or `false` for synchronous storage (slower but guaranteed)
+
+**Important:** If records appear in Redis but not in MySQL, set `RATE_LIMIT_MYSQL_ASYNC=false` to use synchronous storage. Background tasks in async mode may not complete before the response is sent.
+
+**See:** 
+- [MYSQL_STORAGE_FIX.md](MYSQL_STORAGE_FIX.md) for complete details
+- [MYSQL_STORAGE_TROUBLESHOOTING.md](MYSQL_STORAGE_TROUBLESHOOTING.md) for troubleshooting guide
+
+---
+
+### 2025-12-25 - MySQL Integration with Redis Rate Limiting
+
+**Feature Added:**
+- Integrated MySQL storage with Redis rate limiting
+- Added persistent storage for rate limit records alongside Redis fast checking
+
+**Purpose:**
+- Store rate limit records in MySQL for audit and analytics
+- Maintain Redis for fast in-memory rate limit checking
+- Provide historical data and statistics for rate limit usage
+
+**Root Cause Analysis:**
+- Current implementation uses Redis only for rate limiting
+- No persistent storage for rate limit records
+- Cannot track historical rate limit usage or perform analytics
+- Missing audit trail for rate limit events
+
+**Solution:**
+- Created `RateLimitStorage` utility class for MySQL operations
+- Integrated MySQL storage with existing Redis rate limiting
+- Store rate limit records asynchronously to avoid blocking
+- Added configuration options to enable/disable MySQL storage
+
+**Files Created:**
+- `app/utils/rate_limit_storage.py`: MySQL storage utility for rate limit records (lines 1-295)
+- `tests/test_rate_limit_mysql_integration.py`: Unit tests for MySQL integration (10+ test methods)
+
+**Files Modified:**
+- `app/middleware/rate_limit.py`:
+  - Line 11: Added `RateLimitStorage` import
+  - Line 25-26: Added MySQL storage initialization
+  - Line 72-137: Enhanced `check_rate_limit()` to store records in MySQL
+  - Line 139-200: Added `_store_rate_limit_record_async()` method
+- `app/settings.py`:
+  - Line 77-78: Added `rate_limit_mysql_enabled` and `rate_limit_mysql_async` configuration
+- `app/utils/__init__.py`:
+  - Added `RateLimitStorage` to exports
+
+**Features:**
+- **Dual Storage**: Redis for fast checking, MySQL for persistence
+- **Asynchronous Storage**: MySQL writes don't block rate limit checks
+- **Audit Trail**: All rate limit events stored in MySQL
+- **Analytics**: Query rate limit history and statistics
+- **Backward Compatible**: Works with Redis-only mode if MySQL is disabled
+
+**Database Table:**
+- `rate_limit_records`: Stores rate limit records with identifier, window type, request count, timestamps
+- See `scripts/database/init_database.sql` for schema
+
+**Configuration:**
+```bash
+RATE_LIMIT_MYSQL_ENABLED=true   # Enable MySQL storage (default: true)
+RATE_LIMIT_MYSQL_ASYNC=true     # Use async storage (default: true)
+```
+
+**Usage:**
+- MySQL storage is enabled by default
+- Rate limit records are automatically stored in MySQL
+- Use `RateLimitStorage` class to query history and statistics
+- Can be disabled with `RATE_LIMIT_MYSQL_ENABLED=false`
+
+**Verification:**
+- Unit tests verify MySQL integration works correctly
+- Rate limiting continues to work even if MySQL is unavailable
+- Records are stored asynchronously to avoid blocking
+
 ### 2025-12-25 - External Services Configuration
 
 **Feature Added:**
@@ -1266,6 +1376,8 @@ cat EXTERNAL_SERVICES_CHECKLIST.md
 **New Configuration Files:**
 - `config/external_services.yaml`: Complete external services configuration reference - *Added: 2025-12-25*
 - `EXTERNAL_SERVICES_CHECKLIST.md`: Detailed external services setup guide - *Added: 2025-12-25*
+- `docs/DATABASE_SCHEMA_RATE_LIMITING.md`: Database schema documentation for rate limiting - *Added: 2025-12-25*
+- `app/utils/rate_limit_storage.py`: MySQL storage utility for rate limit records - *Added: 2025-12-25*
 
 **New Tests:**
 - `tests/test_env_loader.py`: Environment loader unit tests
@@ -1280,6 +1392,8 @@ cat EXTERNAL_SERVICES_CHECKLIST.md
 - `tests/test_logging_middleware_separate_files.py`: Logging middleware separate files tests - *Added: 2025-12-25*
 - `tests/test_huaweicloud_removal.py`: Huawei Cloud removal verification tests - *Added: 2025-12-25*
 - `tests/test_external_services_verification.py`: External services verification tests - *Added: 2025-12-25*
+- `tests/test_rate_limit_per_user.py`: Per-user rate limiting tests - *Added: 2025-12-25*
+- `tests/test_rate_limit_mysql_integration.py`: MySQL integration tests - *Added: 2025-12-25*
 
 **Modified Files:**
 - `app/settings.py`: Added cluster configuration fields (lines 104-158)

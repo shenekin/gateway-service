@@ -75,6 +75,15 @@ class Settings(BaseSettings):
     rate_limit_per_hour: int = int(os.getenv("RATE_LIMIT_PER_HOUR", "1000"))
     rate_limit_per_day: int = int(os.getenv("RATE_LIMIT_PER_DAY", "10000"))
     rate_limit_strategy: str = os.getenv("RATE_LIMIT_STRATEGY", "token_bucket")
+    # Line 77-78: Added MySQL integration for rate limiting
+    # Reason: Enable MySQL storage for rate limit records alongside Redis
+    #         Redis handles fast checking, MySQL provides persistent storage for audit/analytics
+    rate_limit_mysql_enabled: bool = os.getenv("RATE_LIMIT_MYSQL_ENABLED", "true").lower() == "true"
+    # Line 82: Changed default to False for reliability
+    # Reason: Async mode may not complete background tasks before response is sent
+    #         Synchronous mode guarantees MySQL writes complete
+    #         Users can set RATE_LIMIT_MYSQL_ASYNC=true for faster but less reliable storage
+    rate_limit_mysql_async: bool = os.getenv("RATE_LIMIT_MYSQL_ASYNC", "false").lower() == "true"
     
     # Circuit Breaker
     circuit_breaker_enabled: bool = os.getenv("CIRCUIT_BREAKER_ENABLED", "true").lower() == "true"

@@ -226,11 +226,45 @@ async def gateway_handler(request: Request, path: str) -> Response:
     if route.config.rewrite_path:
         forward_path = route.config.rewrite_path
     
-    # Get request body
-    body = await request.body()
+    # Get request body for forwarding to backend service
+    # Line 229-250: Request body handling for forwarding
+    # Reason: Request body may have been read during rate limiting for login endpoints
+    #         We need to preserve it for forwarding to backend services
+    # Solution: Use stored body if available, otherwise read it now
+    # Note: Body is stored in request.state._body by rate limiting middleware for login endpoints
+    body = None
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        if hasattr(request.state, "_body"):
+            # Body was already read (e.g., during rate limiting for login endpoints)
+            # Use the stored body
+            body = request.state._body
+        else:
+            # Body hasn't been read yet, read it now for forwarding
+            try:
+                body = await request.body()
+                # Store for potential reuse (though we shouldn't need it again)
+                if body:
+                    request.state._body = body
+            except Exception:
+                # If body reading fails, set to None
+                # This is OK for requests that don't require a body
+                body = None
     
     # Forward request
+    # Line 248-260: Request forwarding with proper body handling
+    # Reason: Ensure body is properly forwarded to backend services
+    #         Handle cases where body might be empty or None
     try:
+        # Prepare body for forwarding
+        # Use stored body if available, otherwise use None
+        # Only forward body for methods that typically have bodies
+        forward_body = None
+        if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+            if body and isinstance(body, bytes) and len(body) > 0:
+                forward_body = body
+            # If body is None or empty, don't forward it
+            # Backend service will handle validation of missing body
+        
         response = await proxy_service.forward_request(
             instance=selected_instance,
             context=context,
@@ -238,7 +272,7 @@ async def gateway_handler(request: Request, path: str) -> Response:
             path=forward_path,
             headers=route.config.headers,
             query_params=context.query_params,
-            body=body if body else None,
+            body=forward_body,
             timeout=route.config.timeout
         )
         

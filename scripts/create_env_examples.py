@@ -123,6 +123,9 @@ RATE_LIMIT_PER_MINUTE={'200' if env_name == 'dev' else '100'}
 RATE_LIMIT_PER_HOUR={'2000' if env_name == 'dev' else '1000'}
 RATE_LIMIT_PER_DAY={'20000' if env_name == 'dev' else '10000'}
 RATE_LIMIT_STRATEGY=token_bucket
+# MySQL Integration for Rate Limiting (Added: 2025-12-25)
+RATE_LIMIT_MYSQL_ENABLED=true
+RATE_LIMIT_MYSQL_ASYNC=true
 
 # Circuit Breaker
 CIRCUIT_BREAKER_ENABLED=true
