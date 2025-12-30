@@ -131,7 +131,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         
         # Use custom limit or default
         limit = custom_limit or self.settings.rate_limit_per_minute
-        window_seconds = 60
+        window_seconds = 6000
         
         return await self.check_rate_limit(identifier, limit, window_seconds, route_path)
     
