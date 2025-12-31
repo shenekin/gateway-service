@@ -1,7 +1,10 @@
 services:
   project-service:
     instances:
-      - url: http://127.0.0.1:8002
+      - url: http://project-service-1:8000
+        weight: 1
+        healthy: true
+      - url: http://project-service-2:8000
         weight: 1
         healthy: true
     health_check:
@@ -38,3 +41,4 @@ services:
       path: /health
       interval: 30
       timeout: 5
+

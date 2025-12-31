@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     
     # JWT
     jwt_secret_key: str = os.getenv("JWT_SECRET_KEY", "secret_key")
-    jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "RS256")
+    jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "HS256")
     jwt_expiration_minutes: int = int(os.getenv("JWT_EXPIRATION_MINUTES", "30"))
     jwt_public_key_path: Optional[str] = os.getenv("JWT_PUBLIC_KEY_PATH")
     jwt_private_key_path: Optional[str] = os.getenv("JWT_PRIVATE_KEY_PATH")
