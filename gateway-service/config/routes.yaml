@@ -1,0 +1,122 @@
+routes:
+  - path: /api/v1/projects/**
+    service: project-service
+    methods: [GET, POST, PUT, DELETE, PATCH]
+    auth_required: true
+    rate_limit: 100
+    timeout: 30
+    strip_prefix: false
+    
+  - path: /api/v1/customers/**
+    service: project-service
+    methods: [GET, POST, PUT, DELETE, PATCH]
+    auth_required: true
+    rate_limit: 100
+    timeout: 30
+    strip_prefix: false
+    
+  - path: /api/v1/credentials/**
+    service: project-service
+    methods: [GET, POST, PUT, DELETE, PATCH]
+    auth_required: true
+    rate_limit: 100
+    timeout: 30
+    strip_prefix: false
+    
+  - path: /api/v1/vendors/**
+    service: project-service
+    methods: [GET]
+    auth_required: false
+    rate_limit: 100
+    timeout: 30
+    strip_prefix: false
+    
+  - path: /api/v1/permissions/**
+    service: project-service
+    methods: [GET, POST, PUT, DELETE]
+    auth_required: true
+    rate_limit: 100
+    timeout: 30
+    strip_prefix: false
+    
+  - path: /api/v1/audit/**
+    service: project-service
+    methods: [GET]
+    auth_required: true
+    rate_limit: 100
+    timeout: 30
+    strip_prefix: false
+    
+  # Legacy routes for backward compatibility
+
+    
+  - path: /auth/login
+    service: auth-service
+    methods: [POST]
+    auth_required: false
+    rate_limit: 10
+    timeout: 10
+    
+  - path: /auth/logout
+    service: auth-service
+    methods: [POST]
+    auth_required: true
+    rate_limit: 20
+    timeout: 10
+    
+  - path: /auth/register
+    service: auth-service
+    methods: [POST]
+    auth_required: false
+    rate_limit: 5
+    timeout: 10
+    
+  - path: /auth/refresh
+    service: auth-service
+    methods: [POST]
+    auth_required: true
+    rate_limit: 20
+    timeout: 10
+    
+  - path: /ecs
+    service: ecs-service
+    methods: [GET, POST]
+    auth_required: true
+    rate_limit: 50
+    timeout: 60
+    
+  - path: /ecs/{ecs_id}
+    service: ecs-service
+    methods: [GET, PUT, DELETE]
+    auth_required: true
+    rate_limit: 50
+    timeout: 60
+    
+  - path: /dashboard
+    service: dashboard-service
+    methods: [GET]
+    auth_required: true
+    rate_limit: 30
+    timeout: 20
+    
+  - path: /health
+    service: internal
+    methods: [GET]
+    auth_required: false
+    rate_limit: 1000
+    timeout: 5
+    
+  - path: /ready
+    service: internal
+    methods: [GET]
+    auth_required: false
+    rate_limit: 1000
+    timeout: 5
+    
+  - path: /metrics
+    service: internal
+    methods: [GET]
+    auth_required: false
+    rate_limit: 1000
+    timeout: 5
+

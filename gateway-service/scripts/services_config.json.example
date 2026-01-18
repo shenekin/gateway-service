@@ -1,0 +1,51 @@
+{
+  "nacos_server": "localhost:8848",
+  "namespace": "public",
+  "group": "DEFAULT_GROUP",
+  "services": [
+    {
+      "name": "auth-service",
+      "ip": "127.0.0.1",
+      "port": 8000,
+      "weight": 1.0,
+      "metadata": {
+        "version": "1.0.0",
+        "health_check": "/health",
+        "description": "Authentication and Authorization Service"
+      }
+    },
+    {
+      "name": "project-service",
+      "ip": "127.0.0.1",
+      "port": 8002,
+      "weight": 1.0,
+      "metadata": {
+        "version": "1.0.0",
+        "health_check": "/health",
+        "description": "Project Management Service"
+      }
+    },
+    {
+      "name": "ecs-service",
+      "ip": "127.0.0.1",
+      "port": 8003,
+      "weight": 1.0,
+      "metadata": {
+        "version": "1.0.0",
+        "health_check": "/health",
+        "description": "ECS Instance Management Service"
+      }
+    },
+    {
+      "name": "dashboard-service",
+      "ip": "127.0.0.1",
+      "port": 8004,
+      "weight": 1.0,
+      "metadata": {
+        "version": "1.0.0",
+        "health_check": "/health",
+        "description": "Dashboard Service"
+      }
+    }
+  ]
+}

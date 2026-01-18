@@ -1,0 +1,602 @@
+2025-12-28 16:59:19,032 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 16:59:19,056 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 16:59:26,065 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 16:59:26,077 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 17:05:25,948 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 17:05:25,962 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 17:06:47,560 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 17:06:47,574 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 17:41:11,426 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 17:41:11,439 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:10:32,486 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 18:10:32,497 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:15:50,426 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 18:15:50,440 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:15:51,520 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 18:15:51,536 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:15:52,391 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 18:15:52,407 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:15:53,159 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-28 18:15:53,173 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:16:39,631 - gateway.error - ERROR - Request failed: GET /login - 404
+2025-12-28 18:16:39,649 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:16:48,750 - gateway.error - ERROR - Request failed: GET /login - 404
+2025-12-28 18:16:48,767 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:16:49,742 - gateway.error - ERROR - Request failed: GET /login - 404
+2025-12-28 18:16:49,754 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:16:50,687 - gateway.error - ERROR - Request failed: GET /login - 404
+2025-12-28 18:16:50,701 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:17:09,519 - gateway.error - ERROR - Request failed: GET /logout - 404
+2025-12-28 18:17:09,535 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-28 18:17:21,920 - gateway.error - ERROR - Request failed: GET /register - 404
+2025-12-28 18:17:21,934 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:15,070 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-29 15:02:15,099 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:21,438 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:40,761 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:02:49,330 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 15:03:01,726 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 16:02:38,860 - gateway.error - ERROR - Request failed: GET /auth/register - 404
+2025-12-29 16:02:38,880 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 16:07:15,621 - gateway.error - ERROR - Request failed: GET /auth/register - 404
+2025-12-29 16:07:15,633 - gateway.error - ERROR - Request failed: GET /favicon.ico - 404
+2025-12-29 16:19:41,688 - gateway.error - ERROR - Request failed: POST /login - 404
+2025-12-29 16:20:49,254 - gateway.error - ERROR - Request failed: POST /api/auth/login - 404
+2025-12-29 16:21:59,739 - gateway.error - ERROR - Request exception: POST /auth/login
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 98, in receive
+    return self.receive_nowait()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 93, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 78, in call_next
+    message = await recv_stream.receive()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 118, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/logging.py", line 143, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 108, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/tracing.py", line 130, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 274, in app
+    raw_response = await run_endpoint_function(
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/main.py", line 188, in gateway_handler
+    is_allowed, remaining = await rate_limit_middleware.check_request_rate_limit(
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 130, in check_request_rate_limit
+    identifier = self._get_identifier(request)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 149, in _get_identifier
+    user_id = request.state.get("user_id")
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/datastructures.py", line 705, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'get'
+2025-12-29 16:22:56,090 - gateway.error - ERROR - Request exception: POST /auth/login
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 98, in receive
+    return self.receive_nowait()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 93, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 78, in call_next
+    message = await recv_stream.receive()
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/anyio/streams/memory.py", line 118, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/logging.py", line 143, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 108, in __call__
+    response = await self.dispatch_func(request, call_next)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/tracing.py", line 130, in dispatch
+    response = await call_next(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 84, in call_next
+    raise app_exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 274, in app
+    raw_response = await run_endpoint_function(
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/main.py", line 188, in gateway_handler
+    is_allowed, remaining = await rate_limit_middleware.check_request_rate_limit(
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 130, in check_request_rate_limit
+    identifier = self._get_identifier(request)
+  File "/developer/Cloud_resource_management_system_platform_microservices/gateway-service/app/middleware/rate_limit.py", line 149, in _get_identifier
+    user_id = request.state.get("user_id")
+  File "/home/ekin/.pyenv/versions/3.10.14/lib/python3.10/site-packages/starlette/datastructures.py", line 705, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'get'
+2025-12-29 16:23:32,241 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:23:59,326 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:25:05,820 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:25:32,192 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:26:24,098 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:27:14,301 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:27:21,439 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:27:22,523 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:29:27,765 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:31:05,315 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:31:34,179 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:33:22,684 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 16:33:38,189 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:15:20,913 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:22:34,704 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:22:42,248 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-29 17:51:28,994 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-29 17:52:41,652 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:53:43,623 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:54:12,341 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:57:00,749 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:58:06,389 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 17:58:19,933 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 18:01:01,936 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 18:02:49,087 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 18:03:23,332 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 19:52:29,280 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-29 19:55:10,933 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-29 19:56:03,663 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-29 19:57:40,124 - gateway.error - ERROR - Request failed: POST /api/auth/login - 404
+2025-12-29 19:58:11,493 - gateway.error - ERROR - Request failed: POST /api/auth/login - 404
+2025-12-29 19:59:18,002 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-29 19:59:43,512 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 20:06:20,378 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 20:06:46,413 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 20:06:47,860 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 20:07:14,271 - gateway.error - ERROR - Request failed: POST /auth/login - 500
+2025-12-29 20:48:47,089 - gateway.error - ERROR - Request failed: POST /auth/login - 400
+2025-12-29 20:51:57,807 - gateway.error - ERROR - Request failed: POST /auth/login - 400
+2025-12-29 21:02:17,762 - gateway.error - ERROR - Request failed: GET /auth/verify - 404
+2025-12-29 21:03:07,538 - gateway.error - ERROR - Request failed: GET /users/1 - 404
+2025-12-29 21:03:23,762 - gateway.error - ERROR - Request failed: GET /users/by-username/alex.w - 404
+2025-12-29 21:04:00,107 - gateway.error - ERROR - Request failed: GET /users/1 - 404
+2025-12-29 21:04:21,371 - gateway.error - ERROR - Request failed: GET /users/by-username/alex.w - 404
+2025-12-29 21:05:29,140 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-29 21:06:10,673 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-29 21:07:12,386 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-29 21:08:19,837 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-29 21:08:49,499 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-29 21:39:02,982 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:39:05,182 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:39:06,661 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:39:07,678 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:40:29,980 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:40:55,670 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:40:57,365 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:40:58,701 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:41:00,037 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:41:01,181 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:41:01,821 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:41:02,782 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:52:03,810 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 21:53:21,962 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:00:04,241 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:00:38,849 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:00:40,209 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:00:41,393 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:00:42,347 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:01:45,593 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:06,583 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:07,431 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:08,639 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:09,319 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:09,983 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:10,576 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:11,344 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:12,352 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:13,104 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:14,028 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:14,687 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:15,384 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:15,999 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:16,591 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:18,184 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:18,815 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:19,455 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:20,071 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:20,863 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:21,624 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:28,247 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:29,078 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:29,879 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:30,759 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:31,559 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:32,255 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:32,944 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:33,623 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:34,287 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:34,951 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:35,729 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:36,959 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:37,696 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:38,559 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:39,655 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:40,367 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:41,167 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:41,895 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:42,632 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:43,288 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:43,879 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:44,480 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:45,071 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:45,743 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:46,400 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:47,151 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:47,991 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:48,823 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:49,599 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:50,295 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:50,951 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:51,695 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:52,520 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:53,264 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:53,968 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:54,712 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:55,463 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:56,247 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:57,017 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:57,903 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:58,575 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:59,152 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:11:59,687 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:00,191 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:00,711 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:01,224 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:01,711 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:02,231 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:02,759 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:03,264 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:03,775 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:04,255 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:04,752 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:05,199 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:05,631 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:11,743 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:12,927 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:13,759 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:14,336 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:14,911 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:15,439 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:15,983 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:12:16,487 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:28,102 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:29,214 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:29,735 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:30,158 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:30,550 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:30,894 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:31,262 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:31,614 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:31,958 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:32,310 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:32,678 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:33,038 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:33,390 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:33,750 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:34,102 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:34,438 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:34,798 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:17:35,389 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:25,197 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:49,038 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:50,021 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:50,837 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:51,677 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:52,616 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:53,429 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:19:54,237 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:03,341 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:04,077 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:05,181 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:42,236 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:43,157 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:43,837 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:44,421 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:44,917 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:20:45,469 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:21:59,508 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:00,444 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:01,164 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:01,877 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:02,564 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:03,340 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:04,028 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:04,724 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:05,356 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:05,972 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:06,604 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:07,420 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:08,196 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:08,836 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:09,420 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:09,996 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:10,652 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:11,268 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:11,964 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:22:12,636 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:23,996 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:24,971 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:25,692 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:26,331 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:26,995 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:27,683 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:28,451 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:29,180 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:29,876 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:30,572 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:31,219 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:31,892 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:32,515 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:33,148 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:33,804 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:23:59,844 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:01,461 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:02,163 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:02,955 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:03,675 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:04,443 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:05,131 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:05,731 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:06,477 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:06,972 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:07,707 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:08,364 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:24:09,043 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:16,696 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:17,250 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:18,155 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:54,971 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:55,811 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:56,507 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:57,291 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:26:58,146 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:27:03,859 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:27:04,499 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:27:05,083 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:27:05,643 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:27:06,171 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-29 22:27:06,722 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:22:39,729 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:22:41,488 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:46:57,962 - gateway.error - ERROR - Request failed: GET /auth/verify - 404
+2025-12-30 07:48:22,256 - gateway.error - ERROR - Request failed: GET /users/1 - 404
+2025-12-30 07:50:08,344 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-30 07:50:57,504 - gateway.error - ERROR - Request failed: POST /auth/logout - 500
+2025-12-30 07:51:05,712 - gateway.error - ERROR - Request failed: POST /auth/logout - 500
+2025-12-30 07:54:21,007 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:55:20,686 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:55:48,142 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:56:07,391 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:56:08,927 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:56:09,734 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 07:56:40,207 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 07:57:23,264 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:18:03,772 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:18:05,707 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:18:06,506 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:18:07,235 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:18:07,995 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:22:40,044 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:23:21,960 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:23:24,681 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:23:25,586 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:23:26,382 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:23:27,387 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:23:29,040 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:38:17,280 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:39:37,650 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:39:38,516 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:42:41,894 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:44:25,352 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:44:26,497 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:44:27,785 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:44:28,633 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:46:16,989 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:46:17,886 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:46:18,842 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:46:20,849 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:46:21,649 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:48:49,359 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:48:50,575 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 08:49:27,428 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:49:29,130 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:49:29,844 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:50:09,695 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:50:10,734 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:50:52,774 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:50:53,552 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:50:54,271 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:52:26,780 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:52:27,695 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:02,211 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:03,064 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:28,981 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:29,875 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:50,058 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:50,885 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:53:51,650 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:54:29,784 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:54:30,579 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:54:53,740 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:54:54,689 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:54:55,658 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:56:09,003 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:56:09,916 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:56:10,617 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:56:11,254 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 08:56:12,120 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:09:41,454 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:09:42,752 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:09:43,253 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:09:45,452 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:10:36,041 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:33:48,824 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:33:50,070 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:39:01,491 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:39:02,491 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:39:50,386 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:39:51,188 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:39:51,986 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:39:52,986 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:40:26,599 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:40:55,800 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:40:56,671 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:40:57,466 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:45:41,395 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:46:08,872 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:46:09,662 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:49:44,369 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:49:45,177 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:49:45,928 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:54:15,402 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:54:16,246 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:55:22,925 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:56:18,450 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:56:19,234 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:57:42,360 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:57:42,866 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:57:43,494 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:59:35,674 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 09:59:36,481 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:24:25,827 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:24:31,653 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:43,520 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:44,699 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:45,449 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:46,179 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:46,902 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:47,605 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:48,238 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:48,973 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:49,646 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:50,309 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:51,043 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:47:51,804 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:54:49,009 - gateway.error - ERROR - Request failed: POST /auth/refresh - 401
+2025-12-30 10:54:49,072 - gateway.error - ERROR - Request failed: POST /auth/refresh - 503
+2025-12-30 10:57:51,916 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:57:53,192 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:58:54,533 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 10:58:55,953 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:06:53,673 - gateway.error - ERROR - Request failed: GET / - 404
+2025-12-30 11:07:05,066 - gateway.error - ERROR - Request failed: GET /auth/login - 404
+2025-12-30 11:07:33,400 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 11:07:45,832 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-30 11:10:21,730 - gateway.error - ERROR - Request failed: GET /auth/login - 404
+2025-12-30 11:42:14,135 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:15,302 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:15,971 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:16,364 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:17,118 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:17,569 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:18,064 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:18,813 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:20,929 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:21,607 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:22,268 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:22,639 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:23,979 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:24,325 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:42:26,785 - gateway.error - ERROR - Request failed: POST /auth/login - 429
+2025-12-30 11:55:47,957 - gateway.error - ERROR - Request failed: POST /auth/login - 422
+2025-12-31 12:05:00,414 - gateway.error - ERROR - Request failed: POST /auth/login - 502
+2025-12-31 12:12:44,153 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:14:43,145 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:14:58,152 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:16:39,848 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:22:04,463 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:23:06,366 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:23:40,694 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:24:22,071 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:32:06,220 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 500
+2025-12-31 12:34:42,123 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 12:34:56,844 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 12:36:03,084 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:35:54,702 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:37:04,382 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:37:33,534 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:37:55,550 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:51:04,880 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:51:17,390 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:56:14,255 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:56:46,446 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:58:16,558 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 15:58:36,103 - gateway.error - ERROR - Request failed: POST /auth/login - 404
+2025-12-31 16:00:10,415 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:00:22,983 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:00:23,719 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:14:01,598 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:17:26,847 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:22:28,429 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:25:18,614 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:26:21,588 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:31:58,292 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:36:10,944 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:39:50,766 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 16:41:44,460 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 17:08:47,732 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 17:10:52,551 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 17:11:07,549 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 401
+2025-12-31 17:11:57,664 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 502
+2025-12-31 17:14:06,376 - gateway.error - ERROR - Request failed: POST /api/v1/projects - 404
