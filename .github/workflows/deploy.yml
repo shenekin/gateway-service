@@ -1,0 +1,29 @@
+name: Deploy on Ubuntu 24
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t gateway-service:latest .
+
+      - name: Stop old container
+        run: |
+          docker stop gateway-service || true
+          docker rm gateway-service || true
+
+      - name: Run container
+        run: |
+          docker run -d \
+            --name gateway-service \
+            -p 8081:8081 \
+            --restart unless-stopped \
+            gateway-service:latest
